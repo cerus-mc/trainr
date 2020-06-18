@@ -1,8 +1,13 @@
 package xyz.trainr.trainr.database;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 
 /**
  * Controls the behavior of the MongoDB connection
@@ -37,7 +42,18 @@ public class DatabaseController {
      * Opens the MongoDB connection
      */
     public void openConnection() {
-        client = MongoClients.create(connectionString);
+        // Initialize the POJO codec registry
+        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
+                MongoClientSettings.getDefaultCodecRegistry(),
+                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build())
+        );
+
+        // Initialize the MongoDB client
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .codecRegistry(codecRegistry)
+                .applyConnectionString(new ConnectionString(connectionString))
+                .build();
+        client = MongoClients.create(settings);
     }
 
     /**
