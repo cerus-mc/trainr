@@ -12,6 +12,23 @@
     <artifactId>trainr</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
+    <developers>
+        <developer>
+            <name>Lukaesebrot</name>
+            <organization>Trainr</organization>
+            <organizationUrl>https://github.com/trainrr</organizationUrl>
+            <url>https://lukaesebrot.dev</url>
+            <timezone>CET</timezone>
+        </developer>
+        <developer>
+            <name>Cerus</name>
+            <organization>Trainr</organization>
+            <organizationUrl>https://github.com/trainrr</organizationUrl>
+            <url>https://cerus-dev.de</url>
+            <timezone>CET</timezone>
+        </developer>
+    </developers>
+
     <properties>
         <java.version>11</java.version>
         <build.sourceEncoding>utf-8</build.sourceEncoding>
