@@ -1,0 +1,6 @@
+name: '${project.name}'
+description: '${project.description}'
+version: '${project.version}'
+authors: ['Cerus_', 'ksebrt']
+website: '${project.url}'
+main: '${project.groupId}.${project.artifactId}.${project.name}'
