@@ -14,6 +14,7 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        event.setJoinMessage(null);
         spawnLocationController.handleJoin(event.getPlayer());
     }
 

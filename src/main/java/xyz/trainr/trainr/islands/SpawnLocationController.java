@@ -40,11 +40,12 @@ public class SpawnLocationController {
         inventory.setArmorContents(null);
         inventory.setItem(0, new ItemStack(Material.SANDSTONE, 64));
 
-        player.sendMessage("§8§m-------------------------------------------------------");
+        player.sendMessage("§8§m-----------------------------------------------------");
         player.sendMessage(" ");
         player.sendMessage("§r      §6§lWelcome to the §e§lTrainr §6§lserver!");
+        player.sendMessage("§r      §7You were teleported to island §f#" + playerIndexes.get(player.getUniqueId()));
         player.sendMessage(" ");
-        player.sendMessage("§8§m-------------------------------------------------------");
+        player.sendMessage("§8§m-----------------------------------------------------");
     }
 
     public void handleLeave(Player player) {

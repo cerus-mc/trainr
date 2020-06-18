@@ -14,6 +14,7 @@ public class PlayerLeaveListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        event.setQuitMessage(null);
         spawnLocationController.handleLeave(event.getPlayer());
     }
 

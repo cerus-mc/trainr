@@ -10,8 +10,8 @@ blockRemoval:
   warningOffset: 5000
   deletionOffset: 6500
   warningMaterial: REDSTONE_BLOCK
-location:
-  spawn:
+spawn:
+  location:
     ==: org.bukkit.Location
     world: world
     x: 0

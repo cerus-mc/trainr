@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -24,7 +25,7 @@ public class BlockRegistry {
      * Creates a new block registry
      */
     public BlockRegistry() {
-        this.blocks = new HashMap<>();
+        this.blocks = new ConcurrentHashMap<>();
     }
 
     /**
