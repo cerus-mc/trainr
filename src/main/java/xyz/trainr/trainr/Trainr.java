@@ -5,6 +5,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.building.BlockRegistry;
 import xyz.trainr.trainr.building.BlockRemovalTask;
 import xyz.trainr.trainr.database.DatabaseController;
+import xyz.trainr.trainr.users.User;
+import xyz.trainr.trainr.users.UserProvider;
 
 /**
  * Represents the loading class of this plugin
@@ -16,6 +18,7 @@ public class Trainr extends JavaPlugin {
 
     // Define local variables
     private DatabaseController databaseController;
+    private UserProvider userProvider;
 
     @Override
     public void onEnable() {
@@ -37,12 +40,22 @@ public class Trainr extends JavaPlugin {
         // Initialize the block registry and schedule the block removal task
         BlockRegistry blockRegistry = new BlockRegistry();
         getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry), 0L, config.getLong("blockRemoval.interval"));
+
+        // Initialize the user provider
+        userProvider = new UserProvider(databaseController.getDatabase().getCollection("users", User.class));
     }
 
     @Override
     public void onDisable() {
         // Close the current MongoDB connection
         databaseController.closeConnection();
+    }
+
+    /**
+     * @return The user provider
+     */
+    public UserProvider getUserProvider() {
+        return userProvider;
     }
 
 }
