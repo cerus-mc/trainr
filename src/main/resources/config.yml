@@ -1,0 +1,12 @@
+mongodb:
+  host: 'example.com'
+  port: 27017
+  username: 'trainr'
+  password: 'trainr'
+  authDB: 'trainr'
+  dataDB: 'trainr'
+blockRemoval:
+  interval: 20
+  warningOffset: 5000
+  deletionOffset: 6500
+  warningMaterial: REDSTONE_BLOCK
