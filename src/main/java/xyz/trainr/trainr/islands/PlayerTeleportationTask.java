@@ -5,6 +5,7 @@ import org.bukkit.GameMode;
 
 /**
  * Handles the automatic player teleportation task when a player falls down
+ *
  * @author Cerus
  * @version 1.0.0
  * @since 1.0.0
@@ -16,6 +17,7 @@ public class PlayerTeleportationTask implements Runnable {
 
     /**
      * Creates a new player teleportation task
+     *
      * @param spawnLocationController The spawn location controller to use
      */
     public PlayerTeleportationTask(SpawnLocationController spawnLocationController) {

@@ -16,6 +16,7 @@ import xyz.trainr.trainr.Trainr;
 
 /**
  * Registers some event listeners to control the building structure
+ *
  * @author Lukas Schulte Pelkum
  * @version 1.0.0
  * @since 1.0.0
@@ -28,6 +29,7 @@ public class BuildingHooks implements Listener {
 
     /**
      * Creates a new building hooks object
+     *
      * @param blockRegistry The block registry to use
      */
     public BuildingHooks(BlockRegistry blockRegistry) {
@@ -64,8 +66,10 @@ public class BuildingHooks implements Listener {
             return;
         }
 
-        // Cancel the event if the type is RIGHT_CLICK_BLOCK
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        // Cancel the event if the type is RIGHT_CLICK_BLOCK or PHYSICAL
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+                || (event.getAction().equals(Action.PHYSICAL)
+                && !event.getClickedBlock().getType().equals(Material.STONE_PLATE))) {
             event.setCancelled(true);
         }
     }

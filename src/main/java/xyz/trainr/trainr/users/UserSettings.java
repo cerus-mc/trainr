@@ -5,6 +5,7 @@ import org.bukkit.WeatherType;
 
 /**
  * Represents the settings of an user
+ *
  * @author Lukas Schulte Pelkum
  * @version 1.0.0
  * @since 1.0.0
@@ -31,11 +32,12 @@ public class UserSettings {
 
     /**
      * Creates a new user settings object with all values
+     *
      * @param blockLifetime The amount of seconds until a block is going into the 'warning' state
-     * @param blockType The material type of the building block
-     * @param ranked Whether or not the user plays ranked
-     * @param weatherType The type of the players weather
-     * @param time The time of the player
+     * @param blockType     The material type of the building block
+     * @param ranked        Whether or not the user plays ranked
+     * @param weatherType   The type of the players weather
+     * @param time          The time of the player
      */
     UserSettings(int blockLifetime, Material blockType, boolean ranked, WeatherType weatherType, int time) {
         this.blockLifetime = blockLifetime;
@@ -54,6 +56,7 @@ public class UserSettings {
 
     /**
      * Sets the amount of seconds until a block is going into the 'warning' state
+     *
      * @param blockLifetime The amount of seconds until a block is going into the 'warning' state
      */
     public void setBlockLifetime(int blockLifetime) {
@@ -69,6 +72,7 @@ public class UserSettings {
 
     /**
      * Sets the material type of the building block
+     *
      * @param blockType The material type of the building block
      */
     public void setBlockType(Material blockType) {
@@ -84,6 +88,7 @@ public class UserSettings {
 
     /**
      * Sets whether or not the user plays ranked
+     *
      * @param ranked Whether or not the user plays ranked
      */
     public void setRanked(boolean ranked) {
@@ -99,6 +104,7 @@ public class UserSettings {
 
     /**
      * Sets the type of the players weather
+     *
      * @param weatherType The type of the players weather
      */
     public void setWeatherType(WeatherType weatherType) {
@@ -114,6 +120,7 @@ public class UserSettings {
 
     /**
      * Sets the time of the player
+     *
      * @param time The time of the player
      */
     public void setTime(int time) {

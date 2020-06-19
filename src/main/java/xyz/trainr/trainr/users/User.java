@@ -6,6 +6,7 @@ import java.util.UUID;
 
 /**
  * Represents an user
+ *
  * @author Lukas Schulte Pelkum
  * @version 1.0.0
  * @since 1.0.0
@@ -20,6 +21,7 @@ public class User {
 
     /**
      * Creates a new user object with default values
+     *
      * @param uuid The UUID of the user
      */
     public User(UUID uuid) {
@@ -30,10 +32,11 @@ public class User {
 
     /**
      * Creates a new user object with all values
-     * @param id The ID of the MongoDB object
-     * @param uuid The UUID of the user
+     *
+     * @param id       The ID of the MongoDB object
+     * @param uuid     The UUID of the user
      * @param settings The settings of the user
-     * @param stats The stats of the user
+     * @param stats    The stats of the user
      */
     User(ObjectId id, UUID uuid, UserSettings settings, UserStats stats) {
         this.id = id;
@@ -51,6 +54,7 @@ public class User {
 
     /**
      * Sets the ID of the MongoDB object
+     *
      * @param id The ID of the MongoDB object
      */
     void setId(ObjectId id) {
@@ -66,6 +70,7 @@ public class User {
 
     /**
      * Sets the UUID of the user
+     *
      * @param uuid The UUID of the user
      */
     void setUuid(UUID uuid) {
@@ -81,6 +86,7 @@ public class User {
 
     /**
      * Sets the settings of the user
+     *
      * @param settings The settings of the user
      */
     void setSettings(UserSettings settings) {
@@ -96,6 +102,7 @@ public class User {
 
     /**
      * Sets the stats of the user
+     *
      * @param stats The stats of the user
      */
     void setStats(UserStats stats) {

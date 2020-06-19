@@ -10,6 +10,7 @@ import xyz.trainr.trainr.Trainr;
 
 /**
  * Handles the repeating automatic block removal task
+ *
  * @author Lukas Schulte Pelkum
  * @version 1.0.0
  * @since 1.0.0
@@ -22,6 +23,7 @@ public class BlockRemovalTask implements Runnable {
 
     /**
      * Creates a new block removal task
+     *
      * @param blockRegistry The block registry to use
      */
     public BlockRemovalTask(BlockRegistry blockRegistry) {

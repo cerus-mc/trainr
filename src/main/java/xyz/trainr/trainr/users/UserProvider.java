@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Acts as a central user provider
+ *
  * @author Lukas Schulte Pelkum
  * @version 1.0.0
  * @since 1.0.0
@@ -26,6 +27,7 @@ public class UserProvider {
 
     /**
      * Creates a new user provider
+     *
      * @param collection The MongoDB collection to use
      */
     public UserProvider(MongoCollection<User> collection) {
@@ -35,6 +37,7 @@ public class UserProvider {
 
     /**
      * Retrieves the given user out of the database or creates a new one if it doesn't exist
+     *
      * @param uuid The UUID of the user
      * @return The completable future containing the user
      */
@@ -80,6 +83,7 @@ public class UserProvider {
 
     /**
      * Creates a new user object
+     *
      * @param user The user to create
      * @return The completable future
      */
@@ -105,6 +109,7 @@ public class UserProvider {
 
     /**
      * Updates the given user object
+     *
      * @param user The user to update
      * @return The completable future
      */

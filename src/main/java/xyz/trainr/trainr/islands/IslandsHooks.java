@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * Registers some event listeners to control the island structure
+ *
  * @author Cerus
  * @version 1.0.0
  * @since 1.0.0
@@ -18,6 +19,7 @@ public class IslandsHooks implements Listener {
 
     /**
      * Creates a new island hooks object
+     *
      * @param spawnLocationController The spawn location controller to use
      */
     public IslandsHooks(SpawnLocationController spawnLocationController) {

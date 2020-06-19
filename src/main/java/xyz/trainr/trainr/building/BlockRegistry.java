@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registers all placed blocks to provide a simple overview for the BlockRemovalTask
+ *
  * @author Lukas Schulte Pelkum
  * @version 1.0.0
  * @since 1.0.0
@@ -26,6 +27,7 @@ public class BlockRegistry {
 
     /**
      * Registers a new block
+     *
      * @param location the location of the Block
      */
     public void registerBlock(Location location) {
@@ -34,6 +36,7 @@ public class BlockRegistry {
 
     /**
      * Unregisters a block
+     *
      * @param location The location of the Block
      */
     public void unregisterBlock(Location location) {

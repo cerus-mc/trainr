@@ -2,6 +2,7 @@ package xyz.trainr.trainr.users;
 
 /**
  * Represents the stats of an user
+ *
  * @author Lukas Schulte Pelkum
  * @version 1.0.0
  * @since 1.0.0
@@ -26,10 +27,11 @@ public class UserStats {
 
     /**
      * Creates a new user stats object with all values
-     * @param blocksPlaced The amount of placed blocks
-     * @param totalTries The total amount of tries
+     *
+     * @param blocksPlaced   The amount of placed blocks
+     * @param totalTries     The total amount of tries
      * @param succeededTries The amount of succeeded tries
-     * @param bestTime The amount of milliseconds of the best try
+     * @param bestTime       The amount of milliseconds of the best try
      */
     UserStats(int blocksPlaced, int totalTries, int succeededTries, int bestTime) {
         this.blocksPlaced = blocksPlaced;
@@ -47,6 +49,7 @@ public class UserStats {
 
     /**
      * Sets the amount of placed blocks
+     *
      * @param blocksPlaced The amount of placed blocks
      */
     public void setBlocksPlaced(int blocksPlaced) {
@@ -62,6 +65,7 @@ public class UserStats {
 
     /**
      * Sets the total amount of tries
+     *
      * @param totalTries The total amount of tries
      */
     public void setTotalTries(int totalTries) {
@@ -77,6 +81,7 @@ public class UserStats {
 
     /**
      * Sets the amount of succeeded tries
+     *
      * @param succeededTries The amount of succeeded tries
      */
     public void setSucceededTries(int succeededTries) {
@@ -92,6 +97,7 @@ public class UserStats {
 
     /**
      * Sets the amount of milliseconds of the best try
+     *
      * @param bestTime The amount of milliseconds of the best try
      */
     public void setBestTime(long bestTime) {

@@ -68,6 +68,7 @@ public class Trainr extends JavaPlugin {
 
     /**
      * Initializes the user system
+     *
      * @return The user provider
      */
     private UserProvider initializeUserSystem() {

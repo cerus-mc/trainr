@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 /**
  * Simplifies the usage of the MongoDB reactive streams driver by providing
  * simple callback functions
+ *
  * @param <T> The response type to use for this subscriber
  * @author Lukas Schulte Pelkum
  * @version 1.0.0

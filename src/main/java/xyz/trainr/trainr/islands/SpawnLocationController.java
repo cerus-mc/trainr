@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Keeps track of the spawn locations of every player
+ *
  * @author Cerus
  * @version 1.0.0
  * @since 1.0.0
@@ -43,6 +44,7 @@ public class SpawnLocationController {
 
     /**
      * Assigns an island to a joining player
+     *
      * @param player The joining player
      */
     public void handleJoin(Player player) {
@@ -71,6 +73,7 @@ public class SpawnLocationController {
 
     /**
      * Frees the island of a quitting player
+     *
      * @param player The quitting player
      */
     public void handleLeave(Player player) {
@@ -100,6 +103,7 @@ public class SpawnLocationController {
 
     /**
      * Retrieves the island location of a player
+     *
      * @param player The player
      * @return The optional location of the players island
      */
@@ -153,6 +157,7 @@ public class SpawnLocationController {
 
     /**
      * Respawns the given player
+     *
      * @param player The player to respawn
      */
     public void respawn(Player player) {
