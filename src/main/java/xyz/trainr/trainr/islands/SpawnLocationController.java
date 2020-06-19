@@ -1,5 +1,6 @@
 package xyz.trainr.trainr.islands;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,9 +9,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SpawnLocationController {
 
@@ -20,7 +21,7 @@ public class SpawnLocationController {
     private final int zOffset;
     private final Location baseSpawnLocation;
 
-    private final Map<UUID, Integer> playerIndexes = new HashMap<>();
+    private final Map<UUID, Integer> playerIndexes = new ConcurrentHashMap<>();
 
     public SpawnLocationController(JavaPlugin plugin) {
         FileConfiguration config = plugin.getConfig();
@@ -39,6 +40,8 @@ public class SpawnLocationController {
         inventory.clear();
         inventory.setArmorContents(null);
         inventory.setItem(0, new ItemStack(Material.SANDSTONE, 64));
+
+        player.setGameMode(GameMode.SURVIVAL);
 
         player.sendMessage("§8§m-----------------------------------------------------");
         player.sendMessage(" ");
