@@ -3,16 +3,13 @@ package xyz.trainr.trainr;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.trainr.trainr.building.BlockPlaceListener;
 import xyz.trainr.trainr.building.BlockRegistry;
 import xyz.trainr.trainr.building.BlockRemovalTask;
+import xyz.trainr.trainr.building.BuildingHooks;
 import xyz.trainr.trainr.database.DatabaseController;
-import xyz.trainr.trainr.islands.PlayerJoinListener;
-import xyz.trainr.trainr.islands.PlayerLeaveListener;
+import xyz.trainr.trainr.islands.IslandsHooks;
 import xyz.trainr.trainr.islands.PlayerTeleportationTask;
 import xyz.trainr.trainr.islands.SpawnLocationController;
-import xyz.trainr.trainr.listener.PlayerDamageListener;
-import xyz.trainr.trainr.listener.PlayerInteractListener;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
 
@@ -25,10 +22,8 @@ import xyz.trainr.trainr.users.UserProvider;
  */
 public class Trainr extends JavaPlugin {
 
-    // Define local variables
+    // Define the database controller
     private DatabaseController databaseController;
-    private UserProvider userProvider;
-    private SpawnLocationController spawnLocationController;
 
     @Override
     public void onEnable() {
@@ -36,36 +31,17 @@ public class Trainr extends JavaPlugin {
         saveDefaultConfig();
         Configuration config = getConfig();
 
-        // Connect to the configured MongoDB instance
-        databaseController = new DatabaseController(
-                config.getString("mongodb.host"),
-                config.getInt("mongodb.port"),
-                config.getString("mongodb.username"),
-                config.getString("mongodb.password"),
-                config.getString("mongodb.authDB"),
-                config.getString("mongodb.dataDB")
-        );
-        databaseController.openConnection();
+        // Initialize the database system
+        initializeDatabaseSystem();
 
-        // Initialize the block registry and schedule the block removal task
-        BlockRegistry blockRegistry = new BlockRegistry();
-        getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry), 0L, config.getLong("blockRemoval.interval"));
+        // Initialize the user system
+        UserProvider userProvider = initializeUserSystem();
 
-        // Initialize the user provider
-        userProvider = new UserProvider(databaseController.getDatabase().getCollection("users", User.class));
+        // Initialize the building system
+        initializeBuildingSystem();
 
-        // Initialize the spawn location controller and start teleportation task
-        spawnLocationController = new SpawnLocationController(this);
-        getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController), 0L,
-                config.getLong("playerTeleportation.interval"));
-
-        // Register listeners
-        PluginManager pluginManager = getServer().getPluginManager();
-        pluginManager.registerEvents(new PlayerJoinListener(spawnLocationController), this);
-        pluginManager.registerEvents(new PlayerLeaveListener(spawnLocationController), this);
-        pluginManager.registerEvents(new BlockPlaceListener(this, blockRegistry), this);
-        pluginManager.registerEvents(new PlayerDamageListener(), this);
-        pluginManager.registerEvents(new PlayerInteractListener(), this);
+        // Initialize the island system
+        initializeIslandSystem();
     }
 
     @Override
@@ -75,10 +51,53 @@ public class Trainr extends JavaPlugin {
     }
 
     /**
+     * Initializes the MongoDB connection
+     */
+    private void initializeDatabaseSystem() {
+        // Connect to the configured MongoDB instance
+        Configuration config = getConfig();
+        databaseController = new DatabaseController(
+                config.getString("mongodb.host"),
+                config.getInt("mongodb.port"),
+                config.getString("mongodb.username"),
+                config.getString("mongodb.password"),
+                config.getString("mongodb.authDB"),
+                config.getString("mongodb.dataDB")
+        );
+        databaseController.openConnection();
+    }
+
+    /**
+     * Initializes the user system
      * @return The user provider
      */
-    public UserProvider getUserProvider() {
-        return userProvider;
+    private UserProvider initializeUserSystem() {
+        return new UserProvider(databaseController.getDatabase().getCollection("users", User.class));
+    }
+
+    /**
+     * Initializes the building system
+     */
+    private void initializeBuildingSystem() {
+        // Initialize the block registry and schedule the block removal task
+        BlockRegistry blockRegistry = new BlockRegistry();
+        getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry), 0L, getConfig().getLong("blockRemoval.interval"));
+
+        // Register the building hooks
+        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry), this);
+    }
+
+    /**
+     * Initializes the island system
+     */
+    private void initializeIslandSystem() {
+        // Initialize the spawn location controller and start the teleportation task
+        SpawnLocationController spawnLocationController = new SpawnLocationController();
+        getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController), 0L,
+                getConfig().getLong("playerTeleportation.interval"));
+
+        // Register the island hooks
+        getServer().getPluginManager().registerEvents(new IslandsHooks(spawnLocationController), this);
     }
 
 }

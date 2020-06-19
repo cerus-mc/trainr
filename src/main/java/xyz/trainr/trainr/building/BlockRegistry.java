@@ -1,14 +1,10 @@
 package xyz.trainr.trainr.building;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Collections;;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 /**
  * Registers all placed blocks to provide a simple overview for the BlockRemovalTask
