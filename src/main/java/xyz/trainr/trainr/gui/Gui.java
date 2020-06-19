@@ -14,10 +14,12 @@ public class Gui {
 
     private final Inventory inventory;
     private final Set<GuiButton> buttons;
+    private final GuiListener guiListener;
 
     Gui(int size, String title, Set<GuiButton> buttons, ItemStack[] contents) {
         this.inventory = Bukkit.createInventory(new GuiInventoryHolder(), size, title);
         this.buttons = buttons;
+        this.guiListener = new GuiListener(this);
 
         setItems(contents);
     }
