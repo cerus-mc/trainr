@@ -1,7 +1,7 @@
 package xyz.trainr.trainr.islands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
 
 public class PlayerTeleportationTask implements Runnable {
 
@@ -14,16 +14,9 @@ public class PlayerTeleportationTask implements Runnable {
     @Override
     public void run() {
         Bukkit.getOnlinePlayers().stream()
+                .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
                 .filter(player -> player.getLocation().getBlockY() <= spawnLocationController.getDeathHeight())
-                .forEach(player -> {
-                    Location location = spawnLocationController.getIslandLocation(player);
-                    if (location == null) {
-                        // Wtf
-                        player.kickPlayer("Invalid");
-                        return;
-                    }
-                    player.teleport(location);
-                });
+                .forEach(spawnLocationController::respawn);
     }
 
 }

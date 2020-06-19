@@ -11,6 +11,8 @@ import xyz.trainr.trainr.islands.PlayerJoinListener;
 import xyz.trainr.trainr.islands.PlayerLeaveListener;
 import xyz.trainr.trainr.islands.PlayerTeleportationTask;
 import xyz.trainr.trainr.islands.SpawnLocationController;
+import xyz.trainr.trainr.listener.PlayerDamageListener;
+import xyz.trainr.trainr.listener.PlayerInteractListener;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
 
@@ -61,7 +63,9 @@ public class Trainr extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new PlayerJoinListener(spawnLocationController), this);
         pluginManager.registerEvents(new PlayerLeaveListener(spawnLocationController), this);
-        pluginManager.registerEvents(new BlockPlaceListener(blockRegistry), this);
+        pluginManager.registerEvents(new BlockPlaceListener(this, blockRegistry), this);
+        pluginManager.registerEvents(new PlayerDamageListener(), this);
+        pluginManager.registerEvents(new PlayerInteractListener(), this);
     }
 
     @Override

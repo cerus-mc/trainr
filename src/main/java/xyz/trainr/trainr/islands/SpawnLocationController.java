@@ -101,4 +101,15 @@ public class SpawnLocationController {
         return baseSpawnLocation;
     }
 
+    public void respawn(Player player) {
+        Location location = getIslandLocation(player);
+        if (location == null) {
+            // Wtf
+            player.kickPlayer("Invalid");
+            return;
+        }
+
+        player.teleport(location);
+        player.getInventory().setItem(0, new ItemStack(Material.SANDSTONE, 64));
+    }
 }
