@@ -54,8 +54,8 @@ public class Trainr extends JavaPlugin {
 
         // Initialize the spawn location controller and start teleportation task
         spawnLocationController = new SpawnLocationController(this);
-        getServer().getScheduler().runTaskTimerAsynchronously(this, new PlayerTeleportationTask(spawnLocationController),
-                0L, config.getLong("playerTeleportation.interval"));
+        getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController), 0L,
+                config.getLong("playerTeleportation.interval"));
 
         // Register listeners
         PluginManager pluginManager = getServer().getPluginManager();
