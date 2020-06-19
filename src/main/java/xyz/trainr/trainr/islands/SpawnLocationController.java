@@ -78,12 +78,12 @@ public class SpawnLocationController {
             player.setPlayerTime(user.getSettings().getTime(), false);
 
             // Send a welcome message to the player
-            player.sendMessage("§8§m-----------------------------------------------------");
+            player.sendMessage("§8§m----------------------------------------------------");
             player.sendMessage("");
             player.sendMessage("§r      §6§lWelcome to the §e§lTrainr §6§lserver!");
             player.sendMessage("§r      §7You were teleported to island §f#" + playerIndexes.get(player.getUniqueId()));
             player.sendMessage("");
-            player.sendMessage("§8§m-----------------------------------------------------");
+            player.sendMessage("§8§m----------------------------------------------------");
         });
     }
 
