@@ -1,7 +1,6 @@
 package xyz.trainr.trainr;
 
 import org.bukkit.configuration.Configuration;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.building.BlockRegistry;
 import xyz.trainr.trainr.building.BlockRemovalTask;
