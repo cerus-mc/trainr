@@ -9,6 +9,8 @@ import xyz.trainr.trainr.database.DatabaseController;
 import xyz.trainr.trainr.islands.IslandsHooks;
 import xyz.trainr.trainr.islands.PlayerTeleportationTask;
 import xyz.trainr.trainr.islands.SpawnLocationController;
+import xyz.trainr.trainr.stats.ScoreboardController;
+import xyz.trainr.trainr.stats.StatsHooks;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
 
@@ -38,8 +40,17 @@ public class Trainr extends JavaPlugin {
         // Initialize the building system
         initializeBuildingSystem();
 
+        // Initialize new spawn location controller
+        SpawnLocationController spawnLocationController = new SpawnLocationController();
+
+        // Initialize new scoreboard controller
+        ScoreboardController scoreboardController = new ScoreboardController(userProvider);
+
         // Initialize the island system
-        initializeIslandSystem();
+        initializeIslandSystem(spawnLocationController, scoreboardController);
+
+        // Initialize the stats system
+        initializeStatsSystem(spawnLocationController);
     }
 
     @Override
@@ -89,14 +100,20 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the island system
      */
-    private void initializeIslandSystem() {
-        // Initialize the spawn location controller and start the teleportation task
-        SpawnLocationController spawnLocationController = new SpawnLocationController();
+    private void initializeIslandSystem(SpawnLocationController spawnLocationController, ScoreboardController scoreboardController) {
+        // Start the teleportation task
         getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController), 0L,
                 getConfig().getLong("playerTeleportation.interval"));
 
         // Register the island hooks
-        getServer().getPluginManager().registerEvents(new IslandsHooks(spawnLocationController), this);
+        getServer().getPluginManager().registerEvents(new IslandsHooks(spawnLocationController, scoreboardController), this);
+    }
+
+    /**
+     * Initializes the stats system
+     */
+    private void initializeStatsSystem(SpawnLocationController spawnLocationController) {
+        getServer().getPluginManager().registerEvents(new StatsHooks(spawnLocationController), this);
     }
 
 }
