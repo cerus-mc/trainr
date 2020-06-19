@@ -5,9 +5,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.Trainr;
@@ -51,6 +53,19 @@ public class BuildingHooks implements Listener {
     public void handleBlockBreak(BlockBreakEvent event) {
         // Cancel the event if the player is in survival mode
         if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void handlePlayerInteract(PlayerInteractEvent event) {
+        // Check if the player is not in survival mode
+        if (!event.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
+            return;
+        }
+
+        // Cancel the event if the type is RIGHT_CLICK_BLOCK
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             event.setCancelled(true);
         }
     }
