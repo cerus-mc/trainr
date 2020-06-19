@@ -36,10 +36,10 @@ public class Trainr extends JavaPlugin {
         UserProvider userProvider = initializeUserSystem();
 
         // Initialize the building system
-        initializeBuildingSystem();
+        initializeBuildingSystem(userProvider);
 
         // Initialize the island system
-        initializeIslandSystem();
+        initializeIslandSystem(userProvider);
     }
 
     @Override
@@ -77,10 +77,10 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the building system
      */
-    private void initializeBuildingSystem() {
+    private void initializeBuildingSystem(UserProvider userProvider) {
         // Initialize the block registry and schedule the block removal task
         BlockRegistry blockRegistry = new BlockRegistry();
-        getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry), 0L, getConfig().getLong("blockRemoval.interval"));
+        getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry, userProvider), 0L, getConfig().getLong("blockRemoval.interval"));
 
         // Register the building hooks
         getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry), this);
@@ -89,9 +89,9 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the island system
      */
-    private void initializeIslandSystem() {
+    private void initializeIslandSystem(UserProvider userProvider) {
         // Initialize the spawn location controller and start the teleportation task
-        SpawnLocationController spawnLocationController = new SpawnLocationController();
+        SpawnLocationController spawnLocationController = new SpawnLocationController(userProvider);
         getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController), 0L,
                 getConfig().getLong("playerTeleportation.interval"));
 

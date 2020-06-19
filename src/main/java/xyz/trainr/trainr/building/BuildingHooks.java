@@ -9,6 +9,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -70,6 +71,11 @@ public class BuildingHooks implements Listener {
         if (event.getAction().equals(Action.PHYSICAL) && !event.getClickedBlock().getType().equals(Material.STONE_PLATE)) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void handlePlayerDropItem(PlayerDropItemEvent event) {
+        event.setCancelled(true);
     }
 
     @EventHandler

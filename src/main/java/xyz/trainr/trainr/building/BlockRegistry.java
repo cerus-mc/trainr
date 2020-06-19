@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BlockRegistry {
 
     // Define private variables
-    private Map<Location, Long> blocks;
+    private Map<PlayerBlock, Long> blocks;
 
     /**
      * Creates a new block registry
@@ -28,25 +28,25 @@ public class BlockRegistry {
     /**
      * Registers a new block
      *
-     * @param location the location of the Block
+     * @param block The block object
      */
-    public void registerBlock(Location location) {
-        blocks.put(location, System.currentTimeMillis());
+    public void registerBlock(PlayerBlock block) {
+        blocks.put(block, System.currentTimeMillis());
     }
 
     /**
      * Unregisters a block
      *
-     * @param location The location of the Block
+     * @param block The block object
      */
-    public void unregisterBlock(Location location) {
-        blocks.remove(location);
+    public void unregisterBlock(PlayerBlock block) {
+        blocks.remove(block);
     }
 
     /**
      * @return An unmodifiable copy of the current block map
      */
-    public Map<Location, Long> getAllBlocks() {
+    public Map<PlayerBlock, Long> getAllBlocks() {
         return Collections.unmodifiableMap(blocks);
     }
 

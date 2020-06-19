@@ -9,55 +9,97 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
-public class Gui {
+/**
+ * Represents a general GUI
+ *
+ * @author Cerus
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+public class GUI {
 
+    // Define local variables
     private final Inventory inventory;
-    private final Set<GuiButton> buttons;
-    private final GuiListener guiListener;
+    private final Set<GUIButton> buttons;
     private final ItemPolicy itemPolicy;
 
-    Gui(int size, String title, Set<GuiButton> buttons, ItemStack[] contents, ItemPolicy itemPolicy) {
+    /**
+     * Creates a new GUI
+     *
+     * @param size       The size of the GUI
+     * @param title      The title of the GUI
+     * @param buttons    A set of buttons
+     * @param contents   A set of item stacks for the content
+     * @param itemPolicy The default item policy
+     */
+    GUI(int size, String title, Set<GUIButton> buttons, ItemStack[] contents, ItemPolicy itemPolicy) {
         this.itemPolicy = itemPolicy;
-        this.inventory = Bukkit.createInventory(new GuiInventoryHolder(), size, title);
+        this.inventory = Bukkit.createInventory(new GUIInventoryHolder(), size, title);
         this.buttons = buttons;
-        this.guiListener = new GuiListener(this);
+
+        new GUIListener(this);
 
         setItems(contents);
     }
 
+    /**
+     * Opens the inventory for a specific player
+     *
+     * @param player The player who should receive the GUI
+     */
     public void open(Player player) {
         player.openInventory(inventory);
     }
 
+    /**
+     * Sets the items for the inventory
+     *
+     * @param contents The items to use
+     */
     private void setItems(ItemStack[] contents) {
-        for (int i = 0; i < contents.length; i++) {
-            ItemStack item = contents[i];
-            if (item == null) {
-                continue;
+        // Set the contents into the inventory
+        IntStream.range(0, contents.length).forEach(index -> {
+            ItemStack item = contents[index];
+            if (item != null) {
+                inventory.setItem(index, item);
             }
+        });
 
-            inventory.setItem(i, item);
-        }
-
-        for (GuiButton button : buttons) {
-            inventory.setItem(button.getSlot(), button.getItemStack());
-        }
+        // Set the buttons into the inventory
+        buttons.forEach(button ->
+                inventory.setItem(button.getSlot(), button.getItemStack())
+        );
     }
 
-    GuiInventoryHolder getInventoryHolder() {
-        return (GuiInventoryHolder) inventory.getHolder();
+    /**
+     * @return The {@link InventoryHolder} of this GUI
+     */
+    GUIInventoryHolder getInventoryHolder() {
+        return (GUIInventoryHolder) inventory.getHolder();
     }
 
-    public Set<GuiButton> getButtons() {
+    /**
+     * @return A set of buttons
+     */
+    public Set<GUIButton> getButtons() {
         return Collections.unmodifiableSet(buttons);
     }
 
+    /**
+     * @return The default item policy
+     */
     public ItemPolicy getItemPolicy() {
         return itemPolicy;
     }
 
-    static class GuiInventoryHolder implements InventoryHolder {
+    /**
+     * Represents the GUI {@link InventoryHolder}
+     */
+    static class GUIInventoryHolder implements InventoryHolder {
+
+        // Define the UUID of the inventory holder
         private final UUID uuid = UUID.randomUUID();
 
         @Override
@@ -65,9 +107,13 @@ public class Gui {
             return null;
         }
 
-        public UUID getUuid() {
+        /**
+         * @return The UUID of the inventory holder
+         */
+        public UUID getUUID() {
             return uuid;
         }
+
     }
 
 }

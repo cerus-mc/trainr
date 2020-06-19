@@ -1,12 +1,12 @@
 package xyz.trainr.trainr.building;
 
 import org.bukkit.Effect;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.Trainr;
+import xyz.trainr.trainr.users.UserProvider;
 
 /**
  * Handles the repeating automatic block removal task
@@ -20,15 +20,18 @@ public class BlockRemovalTask implements Runnable {
     // Define local variables
     private final Trainr plugin;
     private final BlockRegistry blockRegistry;
+    private final UserProvider userProvider;
 
     /**
      * Creates a new block removal task
      *
      * @param blockRegistry The block registry to use
+     * @param userProvider  The user provider to use
      */
-    public BlockRemovalTask(BlockRegistry blockRegistry) {
+    public BlockRemovalTask(BlockRegistry blockRegistry, UserProvider userProvider) {
         this.plugin = JavaPlugin.getPlugin(Trainr.class);
         this.blockRegistry = blockRegistry;
+        this.userProvider = userProvider;
     }
 
     @Override
@@ -37,24 +40,28 @@ public class BlockRemovalTask implements Runnable {
         Configuration config = plugin.getConfig();
         long currentTimeMillis = System.currentTimeMillis();
 
-        // Run through all registered blocks whose whose offset is big enough
-        // We need to wrap this in a new map because of a ConcurrentModificationException
-        blockRegistry.getAllBlocks().entrySet().stream()
-                .filter(entry -> currentTimeMillis - entry.getValue() >= config.getLong("blockRemoval.warningOffset"))
-                .forEach(entry -> {
-                    // Define useful variables
-                    Location location = entry.getKey();
-                    Block block = location.getBlock();
+        // Loop through all registered blocks
+        blockRegistry.getAllBlocks().forEach((block, created) ->
+            userProvider.getUser(block.getPlayer().getUniqueId()).whenComplete((user, throwable) -> {
+                // Check if the user fetching method threw an exception
+                if (throwable != null) {
+                    throwable.printStackTrace();
+                    return;
+                }
 
-                    // Destroy the block if its offset is big enough or set its material to the configured warning type
-                    if (currentTimeMillis - entry.getValue() >= config.getLong("blockRemoval.deletionOffset")) {
-                        block.setType(Material.AIR);
-                        location.getWorld().playEffect(location, Effect.STEP_SOUND, 1, block.getTypeId());
-                        blockRegistry.unregisterBlock(location);
-                        return;
-                    }
-                    block.setType(Material.valueOf(config.getString("blockRemoval.warningMaterial").toUpperCase()));
-                });
+                // Define the craftBlock
+                Block craftBlock = block.getBlock();
+
+                // Define the state of the block
+                if (currentTimeMillis - created >= user.getSettings().getBlockLifetime()) {
+                    craftBlock.setType(Material.AIR);
+                    craftBlock.getLocation().getWorld().playEffect(craftBlock.getLocation(), Effect.STEP_SOUND, 1, craftBlock.getTypeId());
+                    blockRegistry.registerBlock(block);
+                } else if (currentTimeMillis - created >= user.getSettings().getBlockLifetime() - config.getInt("blockRemoval.warningStateDuration")) {
+                    craftBlock.setType(Material.valueOf(config.getString("blockRemoval.warningMaterial").toUpperCase()));
+                }
+            })
+        );
     }
 
 }

@@ -10,11 +10,24 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.Trainr;
 
-class GuiListener implements Listener {
+/**
+ * Represents the event listener of a GUI
+ *
+ * @author Cerus
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+class GUIListener implements Listener {
 
-    private final Gui gui;
+    // Define the GUI of this listener
+    private final GUI gui;
 
-    public GuiListener(Gui gui) {
+    /**
+     * Creates a new GUI event listener
+     *
+     * @param gui The GUI this listener relates to
+     */
+    public GUIListener(GUI gui) {
         this.gui = gui;
 
         Trainr plugin = JavaPlugin.getPlugin(Trainr.class);
@@ -28,12 +41,12 @@ class GuiListener implements Listener {
             return;
         }
 
-        if (!(inventory.getHolder() instanceof Gui.GuiInventoryHolder)) {
+        if (!(inventory.getHolder() instanceof GUI.GUIInventoryHolder)) {
             return;
         }
 
-        if (!((Gui.GuiInventoryHolder) inventory.getHolder())
-                .getUuid().equals(gui.getInventoryHolder().getUuid())) {
+        if (!((GUI.GUIInventoryHolder) inventory.getHolder())
+                .getUUID().equals(gui.getInventoryHolder().getUUID())) {
             return;
         }
 
@@ -51,12 +64,12 @@ class GuiListener implements Listener {
             return;
         }
 
-        if (!(clickedInventory.getHolder() instanceof Gui.GuiInventoryHolder)) {
+        if (!(clickedInventory.getHolder() instanceof GUI.GUIInventoryHolder)) {
             return;
         }
 
-        if (!((Gui.GuiInventoryHolder) clickedInventory.getHolder())
-                .getUuid().equals(gui.getInventoryHolder().getUuid())) {
+        if (!((GUI.GUIInventoryHolder) clickedInventory.getHolder())
+                .getUUID().equals(gui.getInventoryHolder().getUUID())) {
             return;
         }
 

@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.Trainr;
+import xyz.trainr.trainr.users.UserProvider;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpawnLocationController {
 
     // Define local variables
+    private final UserProvider userProvider;
     private int currentIndex = 0;
     private final int xOffset;
     private final int zOffset;
@@ -33,13 +35,16 @@ public class SpawnLocationController {
 
     /**
      * Creates a new spawn location controller
+     *
+     * @param userProvider The user provider to use
      */
-    public SpawnLocationController() {
+    public SpawnLocationController(UserProvider userProvider) {
         Configuration config = JavaPlugin.getPlugin(Trainr.class).getConfig();
 
-        this.baseSpawnLocation = (Location) config.get("spawn.location");
+        this.userProvider = userProvider;
         this.xOffset = config.getInt("spawn.offset.x");
         this.zOffset = config.getInt("spawn.offset.z");
+        this.baseSpawnLocation = (Location) config.get("spawn.location");
     }
 
     /**
@@ -48,27 +53,38 @@ public class SpawnLocationController {
      * @param player The joining player
      */
     public void handleJoin(Player player) {
-        // Teleport the player to his reserved island
-        player.teleport(getNextSpawnLocation());
-        playerIndexes.put(player.getUniqueId(), currentIndex);
-        changeId();
+        userProvider.getUser(player.getUniqueId()).whenComplete((user, throwable) -> {
+            // Check if the user fetching method threw an exception
+            if (throwable != null) {
+                throwable.printStackTrace();
+                player.kickPlayer("Unexpected error: " + throwable.getMessage());
+                return;
+            }
 
-        // Provide the player with some  building material
-        PlayerInventory inventory = player.getInventory();
-        inventory.clear();
-        inventory.setArmorContents(null);
-        inventory.setItem(0, new ItemStack(Material.SANDSTONE, 64));
+            // Teleport the player to his reserved island
+            player.teleport(getNextSpawnLocation());
+            playerIndexes.put(player.getUniqueId(), currentIndex);
+            changeId();
 
-        // Set the player's game mode
-        player.setGameMode(GameMode.SURVIVAL);
+            // Provide the player with some  building material
+            PlayerInventory inventory = player.getInventory();
+            inventory.clear();
+            inventory.setArmorContents(null);
+            inventory.setItem(0, new ItemStack(user.getSettings().getBlockType(), 64));
 
-        // Send a welcome message to the player
-        player.sendMessage("§8§m-----------------------------------------------------");
-        player.sendMessage("");
-        player.sendMessage("§r      §6§lWelcome to the §e§lTrainr §6§lserver!");
-        player.sendMessage("§r      §7You were teleported to island §f#" + playerIndexes.get(player.getUniqueId()));
-        player.sendMessage("");
-        player.sendMessage("§8§m-----------------------------------------------------");
+            // Set the player's game environment
+            player.setGameMode(GameMode.SURVIVAL);
+            player.setPlayerWeather(user.getSettings().getWeatherType());
+            player.setPlayerTime(user.getSettings().getTime(), false);
+
+            // Send a welcome message to the player
+            player.sendMessage("§8§m-----------------------------------------------------");
+            player.sendMessage("");
+            player.sendMessage("§r      §6§lWelcome to the §e§lTrainr §6§lserver!");
+            player.sendMessage("§r      §7You were teleported to island §f#" + playerIndexes.get(player.getUniqueId()));
+            player.sendMessage("");
+            player.sendMessage("§8§m-----------------------------------------------------");
+        });
     }
 
     /**

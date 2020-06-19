@@ -6,12 +6,11 @@ mongodb:
   authDB: 'trainr'
   dataDB: 'trainr'
 blockRemoval:
-  interval: 20
-  warningOffset: 5000
-  deletionOffset: 6500
+  interval: 5
+  warningStateDuration: 20
   warningMaterial: REDSTONE_BLOCK
 playerTeleportation:
-  interval: 4
+  interval: 5
 spawn:
   location:
     ==: org.bukkit.Location
