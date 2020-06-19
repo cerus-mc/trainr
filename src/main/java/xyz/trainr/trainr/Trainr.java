@@ -9,6 +9,7 @@ import xyz.trainr.trainr.building.BlockRemovalTask;
 import xyz.trainr.trainr.database.DatabaseController;
 import xyz.trainr.trainr.islands.PlayerJoinListener;
 import xyz.trainr.trainr.islands.PlayerLeaveListener;
+import xyz.trainr.trainr.islands.PlayerTeleportationTask;
 import xyz.trainr.trainr.islands.SpawnLocationController;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
@@ -51,8 +52,10 @@ public class Trainr extends JavaPlugin {
         // Initialize the user provider
         userProvider = new UserProvider(databaseController.getDatabase().getCollection("users", User.class));
 
-        // Initialize the spawn location controller
+        // Initialize the spawn location controller and start teleportation task
         spawnLocationController = new SpawnLocationController(this);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new PlayerTeleportationTask(spawnLocationController),
+                0L, config.getLong("playerTeleportation.interval"));
 
         // Register listeners
         PluginManager pluginManager = getServer().getPluginManager();

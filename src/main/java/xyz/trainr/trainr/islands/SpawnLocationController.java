@@ -70,6 +70,17 @@ public class SpawnLocationController {
         return baseSpawnLocation;
     }
 
+    public Location getIslandLocation(Player player) {
+        if(!playerIndexes.containsKey(player.getUniqueId())) {
+            return null;
+        }
+
+        int index = playerIndexes.get(player.getUniqueId());
+        Location baseSpawnLocation = getBaseSpawnLocation().clone();
+        baseSpawnLocation.add(xOffset * index, 0, zOffset * index);
+        return baseSpawnLocation;
+    }
+
     public int getDeathHeight() {
         return this.baseSpawnLocation.getBlockY() - 10;
     }
