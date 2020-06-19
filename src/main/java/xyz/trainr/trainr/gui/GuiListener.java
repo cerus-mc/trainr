@@ -61,10 +61,18 @@ class GuiListener implements Listener {
         }
 
         int slot = event.getSlot();
-        gui.getButtons().stream()
+        boolean present = gui.getButtons().stream()
                 .filter(guiButton -> guiButton.getSlot() == slot)
-                .forEach(guiButton -> event.setCancelled(guiButton.getClickCallback()
-                        .apply((Player) event.getWhoClicked())));
+                .peek(button -> event.setCancelled(button.getClickCallback()
+                        .apply((Player) event.getWhoClicked())))
+                .findAny().isPresent();
+        if (present) {
+            return;
+        }
+
+        if (gui.getItemPolicy() == ItemPolicy.DENY_CLICK) {
+            event.setCancelled(true);
+        }
     }
 
 }

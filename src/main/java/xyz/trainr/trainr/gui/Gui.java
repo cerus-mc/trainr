@@ -14,10 +14,14 @@ public class Gui {
 
     private final Inventory inventory;
     private final Set<GuiButton> buttons;
+    private final GuiListener guiListener;
+    private final ItemPolicy itemPolicy;
 
-    Gui(int size, String title, Set<GuiButton> buttons, ItemStack[] contents) {
+    Gui(int size, String title, Set<GuiButton> buttons, ItemStack[] contents, ItemPolicy itemPolicy) {
+        this.itemPolicy = itemPolicy;
         this.inventory = Bukkit.createInventory(new GuiInventoryHolder(), size, title);
         this.buttons = buttons;
+        this.guiListener = new GuiListener(this);
 
         setItems(contents);
     }
@@ -47,6 +51,10 @@ public class Gui {
 
     public Set<GuiButton> getButtons() {
         return Collections.unmodifiableSet(buttons);
+    }
+
+    public ItemPolicy getItemPolicy() {
+        return itemPolicy;
     }
 
     static class GuiInventoryHolder implements InventoryHolder {
