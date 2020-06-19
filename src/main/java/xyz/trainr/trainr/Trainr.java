@@ -28,7 +28,6 @@ public class Trainr extends JavaPlugin {
     public void onEnable() {
         // Save the default configuration file
         saveDefaultConfig();
-        Configuration config = getConfig();
 
         // Initialize the database system
         initializeDatabaseSystem();

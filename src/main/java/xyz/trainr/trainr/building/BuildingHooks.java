@@ -66,10 +66,8 @@ public class BuildingHooks implements Listener {
             return;
         }
 
-        // Cancel the event if the type is RIGHT_CLICK_BLOCK or PHYSICAL
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-                || (event.getAction().equals(Action.PHYSICAL)
-                && !event.getClickedBlock().getType().equals(Material.STONE_PLATE))) {
+        // Cancel the event if the type is PHYSICAL
+        if (event.getAction().equals(Action.PHYSICAL) && !event.getClickedBlock().getType().equals(Material.STONE_PLATE)) {
             event.setCancelled(true);
         }
     }
