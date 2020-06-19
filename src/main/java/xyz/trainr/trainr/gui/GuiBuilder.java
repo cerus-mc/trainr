@@ -12,6 +12,7 @@ public class GuiBuilder {
     private String title = "My Gui";
     private Set<GuiButton> buttons = new HashSet<>();
     private ItemStack[] contents = new ItemStack[6 * 9];
+    private ItemPolicy itemPolicy = ItemPolicy.ALLOW_CLICK;
 
     public GuiBuilder() {
     }
@@ -37,8 +38,24 @@ public class GuiBuilder {
         return this;
     }
 
+    public GuiBuilder setItemPolicy(ItemPolicy itemPolicy) {
+        this.itemPolicy = itemPolicy;
+        return this;
+    }
+
+    public GuiBuilder fill(ItemStack itemStack, boolean overwrite) {
+        for (int i = 0; i < this.contents.length; i++) {
+            ItemStack old = this.contents[i];
+            if (old != null && !overwrite) {
+                continue;
+            }
+            contents[i] = itemStack;
+        }
+        return this;
+    }
+
     public Gui build() {
-        return new Gui(size, title, buttons, contents);
+        return new Gui(size, title, buttons, contents, itemPolicy);
     }
 
 }
