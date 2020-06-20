@@ -47,11 +47,11 @@ public class BlockRemovalTask implements Runnable {
                 Block craftBlock = block.getBlock();
 
                 // Define the state of the block
-                if (currentTimeMillis - created >= user.getSettings().getBlockLifetime()) {
+                int blockLifetime = user.getSettings().getBlockLifetime() / 20 * 1000;
+                if (currentTimeMillis - created >= blockLifetime) {
                     craftBlock.setType(Material.AIR);
-                    craftBlock.getLocation().getWorld().playEffect(craftBlock.getLocation(), Effect.STEP_SOUND, 1, craftBlock.getTypeId());
-                    blockRegistry.registerBlock(block);
-                } else if (currentTimeMillis - created >= user.getSettings().getBlockLifetime() - config.getInt("blockRemoval.warningStateDuration")) {
+                    blockRegistry.unregisterBlock(block);
+                } else if (currentTimeMillis - created >= blockLifetime - config.getInt("blockRemoval.warningStateDuration") / 20 * 1000) {
                     craftBlock.setType(Material.valueOf(config.getString("blockRemoval.warningMaterial").toUpperCase()));
                 }
             })
