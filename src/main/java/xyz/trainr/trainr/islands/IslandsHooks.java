@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import xyz.trainr.trainr.stats.ScoreboardController;
 
 /**
@@ -44,6 +45,11 @@ public class IslandsHooks implements Listener {
         // Replace the quit message and free the island of the quitting player
         event.setQuitMessage(null);
         spawnLocationController.handleLeave(event.getPlayer());
+    }
+
+    @EventHandler
+    public void handleWeatherChange(WeatherChangeEvent event) {
+        event.setCancelled(true);
     }
 
 }
