@@ -78,7 +78,7 @@ public class Trainr extends JavaPlugin {
      * @return The user provider
      */
     private UserProvider initializeUserSystem() {
-        return new UserProvider(databaseController.getDatabase().getCollection("users", User.class));
+        return new UserProvider(databaseController.getDatabase().getCollection("players", User.class));
     }
 
     /**
