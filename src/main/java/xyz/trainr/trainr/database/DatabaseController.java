@@ -5,6 +5,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -54,6 +55,7 @@ public class DatabaseController {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .codecRegistry(codecRegistry)
                 .applyConnectionString(new ConnectionString(connectionString))
+                .uuidRepresentation(UuidRepresentation.STANDARD)
                 .build();
         client = MongoClients.create(settings);
     }
