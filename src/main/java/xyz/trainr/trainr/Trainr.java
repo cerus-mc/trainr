@@ -47,7 +47,7 @@ public class Trainr extends JavaPlugin {
         ScoreboardController scoreboardController = new ScoreboardController(userProvider);
 
         // Initialize the island system
-        initializeIslandSystem(spawnLocationController, scoreboardController);
+        initializeIslandSystem(userProvider, spawnLocationController, scoreboardController);
 
         // Initialize the stats system
         initializeStatsSystem(spawnLocationController);
@@ -66,12 +66,8 @@ public class Trainr extends JavaPlugin {
         // Connect to the configured MongoDB instance
         Configuration config = getConfig();
         databaseController = new DatabaseController(
-                config.getString("mongodb.host"),
-                config.getInt("mongodb.port"),
-                config.getString("mongodb.username"),
-                config.getString("mongodb.password"),
-                config.getString("mongodb.authDB"),
-                config.getString("mongodb.dataDB")
+                config.getString("mongodb.connectionURI"),
+                config.getString("mongodb.database")
         );
         databaseController.openConnection();
     }
@@ -82,7 +78,9 @@ public class Trainr extends JavaPlugin {
      * @return The user provider
      */
     private UserProvider initializeUserSystem() {
-        return new UserProvider(databaseController.getDatabase().getCollection("users", User.class));
+        UserProvider userProvider = new UserProvider(databaseController.getDatabase().getCollection("players", User.class));
+        userProvider.loadAllUsers();
+        return userProvider;
     }
 
     /**
@@ -100,13 +98,16 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the island system
      */
-    private void initializeIslandSystem(SpawnLocationController spawnLocationController, ScoreboardController scoreboardController) {
+    private void initializeIslandSystem(UserProvider userProvider, SpawnLocationController spawnLocationController, ScoreboardController scoreboardController) {
         // Start the teleportation task
         getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController), 0L,
                 getConfig().getLong("playerTeleportation.interval"));
 
         // Register the island hooks
-        getServer().getPluginManager().registerEvents(new IslandsHooks(spawnLocationController, scoreboardController), this);
+        getServer().getPluginManager().registerEvents(new IslandsHooks(userProvider, spawnLocationController, scoreboardController), this);
+
+        // Register all online players
+        getServer().getOnlinePlayers().forEach(spawnLocationController::handleJoin);
     }
 
     /**

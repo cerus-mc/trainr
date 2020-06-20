@@ -1,5 +1,6 @@
 package xyz.trainr.trainr.islands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,7 +54,10 @@ public class SpawnLocationController {
      * @param player The joining player
      */
     public void handleJoin(Player player) {
-        userProvider.getUser(player.getUniqueId()).whenComplete((user, throwable) -> {
+         // Teleport to world spawn first
+        player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+
+        userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
             // Check if the user fetching method threw an exception
             if (throwable != null) {
                 throwable.printStackTrace();
@@ -180,7 +184,7 @@ public class SpawnLocationController {
         // Retrieve the location of the players island
         Optional<Location> location = getIslandLocation(player);
         if (!location.isPresent()) {
-            player.kickPlayer("Invalid island location");
+            player.sendMessage("Invalid island location");
             return;
         }
 

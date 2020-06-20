@@ -1,5 +1,8 @@
 package xyz.trainr.trainr.users;
 
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
 import java.util.UUID;
@@ -20,6 +23,24 @@ public class User {
     private UserStats stats;
 
     /**
+     * Creates a new user object with all values
+     *
+     * @param uuid     The UUID of the user
+     * @param settings The settings of the user
+     * @param stats    The stats of the user
+     */
+    @BsonCreator
+    public User(@BsonId ObjectId id,
+                @BsonProperty("uuid") UUID uuid,
+                @BsonProperty("settings") UserSettings settings,
+                @BsonProperty("stats") UserStats stats) {
+        this.id = id;
+        this.uuid = uuid;
+        this.settings = settings;
+        this.stats = stats;
+    }
+
+    /**
      * Creates a new user object with default values
      *
      * @param uuid The UUID of the user
@@ -28,21 +49,6 @@ public class User {
         this.uuid = uuid;
         this.settings = new UserSettings();
         this.stats = new UserStats();
-    }
-
-    /**
-     * Creates a new user object with all values
-     *
-     * @param id       The ID of the MongoDB object
-     * @param uuid     The UUID of the user
-     * @param settings The settings of the user
-     * @param stats    The stats of the user
-     */
-    User(ObjectId id, UUID uuid, UserSettings settings, UserStats stats) {
-        this.id = id;
-        this.uuid = uuid;
-        this.settings = settings;
-        this.stats = stats;
     }
 
     /**

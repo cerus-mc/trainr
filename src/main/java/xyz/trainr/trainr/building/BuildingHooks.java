@@ -47,7 +47,7 @@ public class BuildingHooks implements Listener {
         }
 
         // Register the placed block and give him his item back
-        blockRegistry.registerBlock(event.getBlock().getLocation());
+        blockRegistry.registerBlock(new PlayerBlock(event.getBlock(), player));
         plugin.getServer().getScheduler().runTaskLater(plugin, () ->
                 player.getInventory().addItem(new ItemStack(Material.SANDSTONE)), 1);
     }
@@ -68,7 +68,7 @@ public class BuildingHooks implements Listener {
         }
 
         // Cancel the event if the type is PHYSICAL
-        if (event.getAction().equals(Action.PHYSICAL) && !event.getClickedBlock().getType().equals(Material.STONE_PLATE)) {
+        if (event.getAction() == Action.PHYSICAL && event.getClickedBlock().getType() != Material.STONE_PLATE) {
             event.setCancelled(true);
         }
     }

@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Acts as a central user provider
@@ -36,60 +37,44 @@ public class UserProvider {
     }
 
     /**
-     * Retrieves the given user out of the database or creates a new one if it doesn't exist
-     *
-     * @param uuid The UUID of the user
-     * @return The completable future containing the user
+     * Loads all users into the cache
      */
-    public CompletableFuture<User> getUser(UUID uuid) {
-        // Define the completable future to use
-        CompletableFuture<User> future = new CompletableFuture<>();
-
-        // Check if the user exists inside the cache
-        Optional<User> cached = cachedUsers.stream().filter(user -> user.getUuid().equals(uuid)).findFirst();
-        if (cached.isPresent()) {
-            future.complete(cached.get());
-            return future;
-        }
-
+    public void loadAllUsers() {
         // Define the subscriber to use for this database operation
+        AtomicBoolean finished = new AtomicBoolean(false);
         CallbackSubscriber<User> subscriber = new CallbackSubscriber<>();
-        subscriber.doOnNext(user -> {
-            future.complete(user);
-            cachedUsers.add(user);
-        });
-        subscriber.doOnError(future::completeExceptionally);
-        subscriber.doOnComplete(() -> {
-            // Create the user if it does not exist
-            if (!future.isDone()) {
-                User user = new User(uuid);
-                CompletableFuture<Void> createFuture = createUser(user);
-                createFuture.whenComplete((aVoid, throwable) -> {
-                    if (throwable != null) {
-                        future.completeExceptionally(throwable);
-                        return;
-                    }
-                    future.complete(user);
-                });
-            }
-        });
+        subscriber.doOnNext(cachedUsers::add);
+        subscriber.doOnError(Throwable::printStackTrace);
+        subscriber.doOnComplete(() -> finished.set(true));
 
         // Perform the database operation
-        collection.find(Filters.eq("uuid", uuid)).subscribe(subscriber);
+        collection.find().subscribe(subscriber);
 
-        // Return the completable future
-        return future;
+        // Wait until the subscriber finished
+        while (!finished.get());
     }
 
     /**
-     * Creates a new user object
-     *
-     * @param user The user to create
-     * @return The completable future
+     * Retrieves a cached user
+     * @param uuid The UUID of the user
+     * @return The optional cached user
      */
-    public CompletableFuture<Void> createUser(User user) {
+    public Optional<User> getCachedUser(UUID uuid) {
+        return cachedUsers.stream().filter(user -> user.getUuid().equals(uuid)).findFirst();
+    }
+
+    public CompletableFuture<Void> initializeUser(UUID uuid) {
         // Define the completable future to use
         CompletableFuture<Void> future = new CompletableFuture<>();
+
+        // Check if there is already a cached user
+        if (getCachedUser(uuid).isPresent()) {
+            future.complete(null);
+            return future;
+        }
+
+        // Define the user to insert
+        User user = new User(uuid);
 
         // Define the subscriber to use for this database operation
         CallbackSubscriber<InsertOneResult> subscriber = new CallbackSubscriber<>();

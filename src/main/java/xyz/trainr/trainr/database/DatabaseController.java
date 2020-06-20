@@ -5,6 +5,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -28,16 +29,12 @@ public class DatabaseController {
     /**
      * Creates a new MongoDB database controller
      *
-     * @param host     The host of the MongoDB instance
-     * @param port     The port of the MongoDB instance
-     * @param username The name of the user to authenticate with
-     * @param password The password of the user to authenticate with
-     * @param authDB   The name of the authorization database
-     * @param dataDB   The name of the data database
+     * @param connectionURI The connection string to use
+     * @param database      The name of the data database
      */
-    public DatabaseController(String host, int port, String username, String password, String authDB, String dataDB) {
-        this.connectionString = "mongodb://" + username + ":" + password + "@" + host + ":" + port + "/" + authDB;
-        this.databaseName = dataDB;
+    public DatabaseController(String connectionURI, String database) {
+        this.connectionString = connectionURI;
+        this.databaseName = database;
     }
 
     /**
@@ -54,6 +51,7 @@ public class DatabaseController {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .codecRegistry(codecRegistry)
                 .applyConnectionString(new ConnectionString(connectionString))
+                .uuidRepresentation(UuidRepresentation.STANDARD)
                 .build();
         client = MongoClients.create(settings);
     }

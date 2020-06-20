@@ -1,10 +1,6 @@
 mongodb:
-  host: 'example.com'
-  port: 27017
-  username: 'trainr'
-  password: 'trainr'
-  authDB: 'trainr'
-  dataDB: 'trainr'
+  connectionURI: 'mongodb://trainr:trainr@example.com/trainr'
+  database: 'trainr'
 blockRemoval:
   interval: 5
   warningStateDuration: 20
