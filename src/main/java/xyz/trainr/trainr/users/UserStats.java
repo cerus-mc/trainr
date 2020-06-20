@@ -33,7 +33,7 @@ public class UserStats {
      * @param succeededTries The amount of succeeded tries
      * @param bestTime       The amount of milliseconds of the best try
      */
-    UserStats(int blocksPlaced, int totalTries, int succeededTries, int bestTime) {
+    public UserStats(int blocksPlaced, int totalTries, int succeededTries, int bestTime) {
         this.blocksPlaced = blocksPlaced;
         this.totalTries = totalTries;
         this.succeededTries = succeededTries;

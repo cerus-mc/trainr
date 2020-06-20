@@ -39,7 +39,7 @@ public class UserSettings {
      * @param weatherType   The type of the players weather
      * @param time          The time of the player
      */
-    UserSettings(int blockLifetime, Material blockType, boolean ranked, WeatherType weatherType, int time) {
+    public UserSettings(int blockLifetime, Material blockType, boolean ranked, WeatherType weatherType, int time) {
         this.blockLifetime = blockLifetime;
         this.blockType = blockType;
         this.ranked = ranked;

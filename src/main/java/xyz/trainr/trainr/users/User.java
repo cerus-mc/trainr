@@ -38,7 +38,7 @@ public class User {
      * @param settings The settings of the user
      * @param stats    The stats of the user
      */
-    User(ObjectId id, UUID uuid, UserSettings settings, UserStats stats) {
+    public User(ObjectId id, UUID uuid, UserSettings settings, UserStats stats) {
         this.id = id;
         this.uuid = uuid;
         this.settings = settings;
