@@ -66,12 +66,8 @@ public class Trainr extends JavaPlugin {
         // Connect to the configured MongoDB instance
         Configuration config = getConfig();
         databaseController = new DatabaseController(
-                config.getString("mongodb.host"),
-                config.getInt("mongodb.port"),
-                config.getString("mongodb.username"),
-                config.getString("mongodb.password"),
-                config.getString("mongodb.authDB"),
-                config.getString("mongodb.dataDB")
+                config.getString("mongodb.connectionURI"),
+                config.getString("mongodb.database")
         );
         databaseController.openConnection();
     }
