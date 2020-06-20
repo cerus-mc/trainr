@@ -1,5 +1,7 @@
 package xyz.trainr.trainr.users;
 
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bukkit.Material;
 import org.bukkit.WeatherType;
 
@@ -39,7 +41,12 @@ public class UserSettings {
      * @param weatherType   The type of the players weather
      * @param time          The time of the player
      */
-    UserSettings(int blockLifetime, Material blockType, boolean ranked, WeatherType weatherType, int time) {
+    @BsonCreator
+    public UserSettings(@BsonProperty("blockLifetime") int blockLifetime,
+                        @BsonProperty("blockType") Material blockType,
+                        @BsonProperty("ranked") boolean ranked,
+                        @BsonProperty("weatherType") WeatherType weatherType,
+                        @BsonProperty("time") int time) {
         this.blockLifetime = blockLifetime;
         this.blockType = blockType;
         this.ranked = ranked;
