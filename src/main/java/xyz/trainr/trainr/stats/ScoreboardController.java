@@ -2,10 +2,12 @@ package xyz.trainr.trainr.stats;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+import xyz.trainr.trainr.Trainr;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
 import xyz.trainr.trainr.users.UserStats;
@@ -40,7 +42,14 @@ public class ScoreboardController {
      * @param player The player to set the scoreboard to
      */
     public void setScoreboard(Player player) {
-        player.setScoreboard(getNewScoreboard(player));
+        getNewScoreboard(player).whenComplete((scoreboard, throwable) -> {
+            if (throwable != null) {
+                player.sendMessage("§cFailed to load scoreboard");
+                return;
+            }
+
+            Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(Trainr.class), () -> player.setScoreboard(scoreboard));
+        });
     }
 
     /**
@@ -49,10 +58,12 @@ public class ScoreboardController {
      * @param player The player to generate to scoreboard for
      * @return The generated scoreboard
      */
-    private Scoreboard getNewScoreboard(Player player) {
+    private CompletableFuture<Scoreboard> getNewScoreboard(Player player) {
         // Create the scoreboard and register a new objective
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("main_obj", "dummy");
+
+        CompletableFuture<Scoreboard> scoreboardCompletableFuture = new CompletableFuture<>();
 
         // Retrieve the user object of the player
         userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
@@ -76,10 +87,12 @@ public class ScoreboardController {
             // Set the objective data
             objective.setDisplaySlot(DisplaySlot.SIDEBAR);
             objective.setDisplayName("§6§lTrainr");
+
+            scoreboardCompletableFuture.complete(scoreboard);
         });
 
-        // Return the scoreboard object
-        return scoreboard;
+        // Return the scoreboard future object
+        return scoreboardCompletableFuture;
     }
 
     /**
