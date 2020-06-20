@@ -47,7 +47,7 @@ public class BuildingHooks implements Listener {
         }
 
         // Register the placed block and give him his item back
-        blockRegistry.registerBlock(event.getBlock().getLocation());
+        blockRegistry.registerBlock(new PlayerBlock(event.getBlock(), player));
         plugin.getServer().getScheduler().runTaskLater(plugin, () ->
                 player.getInventory().addItem(new ItemStack(Material.SANDSTONE)), 1);
     }
