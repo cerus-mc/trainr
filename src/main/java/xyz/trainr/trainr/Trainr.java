@@ -103,6 +103,9 @@ public class Trainr extends JavaPlugin {
 
         // Register the island hooks
         getServer().getPluginManager().registerEvents(new IslandsHooks(spawnLocationController, scoreboardController), this);
+
+        // Register all online players
+        getServer().getOnlinePlayers().forEach(spawnLocationController::handleJoin);
     }
 
     /**
