@@ -1,5 +1,8 @@
 package xyz.trainr.trainr.users;
 
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
+
 /**
  * Represents the stats of an user
  *
@@ -22,7 +25,7 @@ public class UserStats {
         this.blocksPlaced = 0;
         this.totalTries = 0;
         this.succeededTries = 0;
-        this.bestTime = 0;
+        this.bestTime = -1;
     }
 
     /**
@@ -33,7 +36,11 @@ public class UserStats {
      * @param succeededTries The amount of succeeded tries
      * @param bestTime       The amount of milliseconds of the best try
      */
-    public UserStats(int blocksPlaced, int totalTries, int succeededTries, int bestTime) {
+    @BsonCreator
+    public UserStats(@BsonProperty("blocksPlaced") int blocksPlaced,
+                     @BsonProperty("totalTries") int totalTries,
+                     @BsonProperty("succeededTries") int succeededTries,
+                     @BsonProperty("bestTime") long bestTime) {
         this.blocksPlaced = blocksPlaced;
         this.totalTries = totalTries;
         this.succeededTries = succeededTries;

@@ -42,13 +42,7 @@ public class BlockRemovalTask implements Runnable {
 
         // Loop through all registered blocks
         blockRegistry.getAllBlocks().forEach((block, created) ->
-            userProvider.getUser(block.getPlayer().getUniqueId()).whenComplete((user, throwable) -> {
-                // Check if the user fetching method threw an exception
-                if (throwable != null) {
-                    throwable.printStackTrace();
-                    return;
-                }
-
+            userProvider.getCachedUser(block.getPlayer().getUniqueId()).ifPresent(user -> {
                 // Define the craftBlock
                 Block craftBlock = block.getBlock();
 

@@ -30,7 +30,7 @@ public class DatabaseController {
      * Creates a new MongoDB database controller
      *
      * @param connectionURI The connection string to use
-     * @param dataDB        The name of the data database
+     * @param database      The name of the data database
      */
     public DatabaseController(String connectionURI, String database) {
         this.connectionString = connectionURI;

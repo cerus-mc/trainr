@@ -53,14 +53,7 @@ public class SpawnLocationController {
      * @param player The joining player
      */
     public void handleJoin(Player player) {
-        userProvider.getUser(player.getUniqueId()).whenComplete((user, throwable) -> {
-            // Check if the user fetching method threw an exception
-            if (throwable != null) {
-                throwable.printStackTrace();
-                player.kickPlayer("Unexpected error: " + throwable.getMessage());
-                return;
-            }
-
+        userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
             // Teleport the player to his reserved island
             player.teleport(getNextSpawnLocation());
             playerIndexes.put(player.getUniqueId(), currentIndex);

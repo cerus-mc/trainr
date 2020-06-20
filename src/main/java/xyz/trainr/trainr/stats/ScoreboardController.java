@@ -55,13 +55,7 @@ public class ScoreboardController {
         Objective objective = scoreboard.registerNewObjective("main_obj", "dummy");
 
         // Retrieve the user object of the player
-        CompletableFuture<User> future = userProvider.getUser(player.getUniqueId());
-        future.whenComplete((user, throwable) -> {
-            if (throwable != null) {
-                player.sendMessage("§cFailed to load your scoreboard.");
-                return;
-            }
-
+        userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
             // Define the stats of the player
             UserStats stats = user.getStats();
 
