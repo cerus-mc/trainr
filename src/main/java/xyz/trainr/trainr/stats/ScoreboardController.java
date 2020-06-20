@@ -6,8 +6,11 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
+import xyz.trainr.trainr.users.UserStats;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ScoreboardController {
@@ -27,21 +30,30 @@ public class ScoreboardController {
 
         Objective objective = scoreboard.registerNewObjective("main_obj", "dummy");
 
-        addWhitespace(objective, 11);
-        addEntry(objective, "§eAccount:", 10);
-        addEntry(objective, "§r §8» §d" + player.getDisplayName(), 9);
-        addWhitespace(objective, 8);
-        addEntry(objective, "§ePersonal best:", 7);
-        addEntry(objective, "§r §8» §bNaN§4", 6);
-        addWhitespace(objective, 5);
-        addEntry(objective, "§eGlobal top 3:", 4);
-        addEntry(objective, "§r §8» §7NaN§3", 3);
-        addEntry(objective, "§r §8» §7NaN§2", 2);
-        addEntry(objective, "§r §8» §7NaN§1", 1);
-        addWhitespace(objective, 0);
+        CompletableFuture<User> future = userProvider.getUser(player.getUniqueId());
+        future.whenComplete((user, throwable) -> {
+            if (throwable != null) {
+                player.sendMessage("§cFailed to load your scoreboard");
+                return;
+            }
+            UserStats stats = user.getStats();
 
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName("§6§lTrainr");
+            addWhitespace(objective, 11);
+            addEntry(objective, "§eAccount:", 10);
+            addEntry(objective, "§r §8» §d" + player.getDisplayName(), 9);
+            addWhitespace(objective, 8);
+            addEntry(objective, "§ePersonal best:", 7);
+            addEntry(objective, "§r §8» §b" + stats.getBestTime(), 6);
+            addWhitespace(objective, 5);
+            addEntry(objective, "§eGlobal top 3:", 4);
+            addEntry(objective, "§r §8» §7NaN§3", 3);
+            addEntry(objective, "§r §8» §7NaN§2", 2);
+            addEntry(objective, "§r §8» §7NaN§1", 1);
+            addWhitespace(objective, 0);
+
+            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+            objective.setDisplayName("§6§lTrainr");
+        });
 
         return scoreboard;
     }
