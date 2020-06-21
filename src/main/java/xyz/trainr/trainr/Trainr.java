@@ -1,6 +1,7 @@
 package xyz.trainr.trainr;
 
 import org.bukkit.configuration.Configuration;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.building.BlockRegistry;
 import xyz.trainr.trainr.building.BlockRemovalTask;
@@ -9,10 +10,10 @@ import xyz.trainr.trainr.database.DatabaseController;
 import xyz.trainr.trainr.islands.IslandsHooks;
 import xyz.trainr.trainr.islands.PlayerTeleportationTask;
 import xyz.trainr.trainr.islands.SpawnLocationController;
-import xyz.trainr.trainr.stats.ScoreboardController;
-import xyz.trainr.trainr.stats.StatsHooks;
+import xyz.trainr.trainr.stats.*;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
+import xyz.trainr.trainr.worldgen.TrainrChunkGenerator;
 
 /**
  * Represents the loading class of this plugin
@@ -23,8 +24,9 @@ import xyz.trainr.trainr.users.UserProvider;
  */
 public class Trainr extends JavaPlugin {
 
-    // Define the database controller
+    // Define variables
     private DatabaseController databaseController;
+    private BlockRegistry blockRegistry;
 
     @Override
     public void onEnable() {
@@ -37,24 +39,33 @@ public class Trainr extends JavaPlugin {
         // Initialize the user system
         UserProvider userProvider = initializeUserSystem();
 
-        // Initialize the building system
-        initializeBuildingSystem(userProvider);
+        // Initialize a new timer
+        Timer timer = new Timer();
+
+        // Initialize block registry
+        blockRegistry = new BlockRegistry();
 
         // Initialize new spawn location controller
-        SpawnLocationController spawnLocationController = new SpawnLocationController(userProvider);
+        SpawnLocationController spawnLocationController = new SpawnLocationController(userProvider, blockRegistry);
+
+        // Initialize the building system
+        initializeBuildingSystem(userProvider, timer, spawnLocationController, blockRegistry);
 
         // Initialize new scoreboard controller
         ScoreboardController scoreboardController = new ScoreboardController(userProvider);
 
         // Initialize the island system
-        initializeIslandSystem(userProvider, spawnLocationController, scoreboardController);
+        initializeIslandSystem(userProvider, spawnLocationController, scoreboardController, timer);
 
         // Initialize the stats system
-        initializeStatsSystem(spawnLocationController);
+        initializeStatsSystem(spawnLocationController, scoreboardController, userProvider, timer);
     }
 
     @Override
     public void onDisable() {
+        // Unregister all blocks
+        blockRegistry.unregisterAll();
+
         // Close the current MongoDB connection
         databaseController.closeConnection();
     }
@@ -86,22 +97,21 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the building system
      */
-    private void initializeBuildingSystem(UserProvider userProvider) {
-        // Initialize the block registry and schedule the block removal task
-        BlockRegistry blockRegistry = new BlockRegistry();
+    private void initializeBuildingSystem(UserProvider userProvider, Timer timer, SpawnLocationController spawnLocationController, BlockRegistry blockRegistry) {
+        // Schedule the block removal task
         getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry, userProvider), 0L, getConfig().getLong("blockRemoval.interval"));
 
         // Register the building hooks
-        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry), this);
+        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry, userProvider, spawnLocationController, timer), this);
     }
 
     /**
      * Initializes the island system
      */
-    private void initializeIslandSystem(UserProvider userProvider, SpawnLocationController spawnLocationController, ScoreboardController scoreboardController) {
+    private void initializeIslandSystem(UserProvider userProvider, SpawnLocationController spawnLocationController, ScoreboardController scoreboardController, Timer timer) {
         // Start the teleportation task
-        getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController), 0L,
-                getConfig().getLong("playerTeleportation.interval"));
+        getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController, timer),
+                0L, getConfig().getLong("playerTeleportation.interval"));
 
         // Register the island hooks
         getServer().getPluginManager().registerEvents(new IslandsHooks(userProvider, spawnLocationController, scoreboardController), this);
@@ -113,8 +123,21 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the stats system
      */
-    private void initializeStatsSystem(SpawnLocationController spawnLocationController) {
-        getServer().getPluginManager().registerEvents(new StatsHooks(spawnLocationController), this);
+    private void initializeStatsSystem(SpawnLocationController spawnLocationController, ScoreboardController scoreboardController, UserProvider userProvider, Timer timer) {
+        // Start the scoreboard update task
+        getServer().getScheduler().runTaskTimer(this, new ScoreboardUpdateTask(scoreboardController), 0L,
+                getConfig().getLong("scoreboard.updateInterval"));
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new TimeDisplayTask(timer), 0L, 2);
+
+        getServer().getPluginManager().registerEvents(new StatsHooks(spawnLocationController, userProvider, timer), this);
+    }
+
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+        if (worldName.equals("world")) {
+            return new TrainrChunkGenerator();
+        }
+        return super.getDefaultWorldGenerator(worldName, id);
     }
 
 }

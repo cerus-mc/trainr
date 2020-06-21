@@ -7,6 +7,8 @@ blockRemoval:
   warningMaterial: REDSTONE_BLOCK
 playerTeleportation:
   interval: 5
+scoreboard:
+  updateInterval: 80
 spawn:
   location:
     ==: org.bukkit.Location
