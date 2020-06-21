@@ -56,9 +56,13 @@ public class BuildingHooks implements Listener {
         }
 
         // Register the placed block and give him his item back
+        final Material[] material = {Material.SANDSTONE};
+        userProvider.getCachedUser(player.getUniqueId()).ifPresent(user ->
+                material[0] = user.getSettings().getBlockType());
+
         blockRegistry.registerBlock(new PlayerBlock(event.getBlock(), player));
         plugin.getServer().getScheduler().runTaskLater(plugin, () ->
-                player.getInventory().addItem(new ItemStack(Material.SANDSTONE)), 1);
+                player.getInventory().addItem(new ItemStack(material[0])), 1);
 
         // Update stats
         userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
