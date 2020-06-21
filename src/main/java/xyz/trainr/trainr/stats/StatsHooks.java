@@ -32,8 +32,8 @@ public class StatsHooks implements Listener {
      * Creates a new stats hooks object
      *
      * @param spawnLocationController The spawn location controller to use
-     * @param userProvider
-     * @param timer
+     * @param userProvider            The user provider
+     * @param timer                   The timer
      */
     public StatsHooks(SpawnLocationController spawnLocationController, UserProvider userProvider, Timer timer) {
         this.spawnLocationController = spawnLocationController;

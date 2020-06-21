@@ -38,8 +38,8 @@ public class SpawnLocationController {
     /**
      * Creates a new spawn location controller
      *
-     * @param userProvider The user provider to use
-     * @param blockRegistry
+     * @param userProvider  The user provider to use
+     * @param blockRegistry The block registry FUCK YOU LUKAS, FUCK YOUR DOCUMENTATION
      */
     public SpawnLocationController(UserProvider userProvider, BlockRegistry blockRegistry) {
         this.blockRegistry = blockRegistry;
