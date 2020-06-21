@@ -41,11 +41,11 @@ public class Trainr extends JavaPlugin {
         // Initialize a new timer
         Timer timer = new Timer();
 
-        // Initialize the building system
-        initializeBuildingSystem(userProvider, timer);
-
         // Initialize new spawn location controller
         SpawnLocationController spawnLocationController = new SpawnLocationController(userProvider);
+
+        // Initialize the building system
+        initializeBuildingSystem(userProvider, timer, spawnLocationController);
 
         // Initialize new scoreboard controller
         ScoreboardController scoreboardController = new ScoreboardController(userProvider);
@@ -90,13 +90,13 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the building system
      */
-    private void initializeBuildingSystem(UserProvider userProvider, Timer timer) {
+    private void initializeBuildingSystem(UserProvider userProvider, Timer timer, SpawnLocationController spawnLocationController) {
         // Initialize the block registry and schedule the block removal task
         BlockRegistry blockRegistry = new BlockRegistry();
         getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry, userProvider), 0L, getConfig().getLong("blockRemoval.interval"));
 
         // Register the building hooks
-        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry, userProvider, timer), this);
+        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry, userProvider, spawnLocationController, timer), this);
     }
 
     /**

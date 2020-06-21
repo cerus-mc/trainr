@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.Trainr;
+import xyz.trainr.trainr.gui.ItemBuilder;
 import xyz.trainr.trainr.users.UserProvider;
 
 import java.util.Map;
@@ -54,7 +55,7 @@ public class SpawnLocationController {
      * @param player The joining player
      */
     public void handleJoin(Player player) {
-         // Teleport to world spawn first
+        // Teleport to world spawn first
         player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 
         userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
@@ -185,6 +186,7 @@ public class SpawnLocationController {
         player.teleport(location.get());
         player.getInventory().clear();
         player.getInventory().setItem(0, new ItemStack(Material.SANDSTONE, 64));
+        player.getInventory().clear(8);
     }
 
 }

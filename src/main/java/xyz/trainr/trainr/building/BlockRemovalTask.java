@@ -1,6 +1,5 @@
 package xyz.trainr.trainr.building;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -95,7 +94,7 @@ public class BlockRemovalTask implements Runnable {
             Class<?> blockPosClass = Class.forName("net.minecraft.server.v1_8_R3.BlockPosition");
             Class<?> packetClass = Class.forName("net.minecraft.server.v1_8_R3.PacketPlayOutBlockBreakAnimation");
             Object packet = packetClass.getDeclaredConstructor(int.class, blockPosClass, int.class).newInstance(getBlockEntityId(block),
-                    new BlockPosition(block.getX(), block.getY(), block.getZ()), stage);
+                    blockPosClass.getDeclaredConstructor(int.class, int.class, int.class).newInstance(block.getX(), block.getY(), block.getZ()), stage);
 
             PacketUtil.broadcastPacket(packet);
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
