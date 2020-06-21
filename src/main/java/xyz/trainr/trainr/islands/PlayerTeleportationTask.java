@@ -2,6 +2,7 @@ package xyz.trainr.trainr.islands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import xyz.trainr.trainr.stats.Timer;
 
 /**
  * Handles the automatic player teleportation task when a player falls down
@@ -12,16 +13,19 @@ import org.bukkit.GameMode;
  */
 public class PlayerTeleportationTask implements Runnable {
 
-    // Define the spawn location controller
+    // Define variables
     private final SpawnLocationController spawnLocationController;
+    private final Timer timer;
 
     /**
      * Creates a new player teleportation task
      *
      * @param spawnLocationController The spawn location controller to use
+     * @param timer
      */
-    public PlayerTeleportationTask(SpawnLocationController spawnLocationController) {
+    public PlayerTeleportationTask(SpawnLocationController spawnLocationController, Timer timer) {
         this.spawnLocationController = spawnLocationController;
+        this.timer = timer;
     }
 
     @Override
@@ -30,7 +34,12 @@ public class PlayerTeleportationTask implements Runnable {
         Bukkit.getOnlinePlayers().stream()
                 .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
                 .filter(player -> player.getLocation().getBlockY() <= spawnLocationController.getDeathHeight())
-                .forEach(spawnLocationController::respawn);
+                .forEach(player -> {
+                    if (timer.isTimmerRunning(player)) {
+                        timer.stopTimer(player);
+                    }
+                    spawnLocationController.respawn(player);
+                });
     }
 
 }

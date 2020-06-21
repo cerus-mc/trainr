@@ -1,14 +1,6 @@
 package xyz.trainr.trainr;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.building.BlockRegistry;
@@ -21,6 +13,7 @@ import xyz.trainr.trainr.islands.SpawnLocationController;
 import xyz.trainr.trainr.stats.ScoreboardController;
 import xyz.trainr.trainr.stats.ScoreboardUpdateTask;
 import xyz.trainr.trainr.stats.StatsHooks;
+import xyz.trainr.trainr.stats.Timer;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
 import xyz.trainr.trainr.worldgen.TrainrChunkGenerator;
@@ -48,8 +41,11 @@ public class Trainr extends JavaPlugin {
         // Initialize the user system
         UserProvider userProvider = initializeUserSystem();
 
+        // Initialize a new timer
+        Timer timer = new Timer();
+
         // Initialize the building system
-        initializeBuildingSystem(userProvider);
+        initializeBuildingSystem(userProvider, timer);
 
         // Initialize new spawn location controller
         SpawnLocationController spawnLocationController = new SpawnLocationController(userProvider);
@@ -58,10 +54,10 @@ public class Trainr extends JavaPlugin {
         ScoreboardController scoreboardController = new ScoreboardController(userProvider);
 
         // Initialize the island system
-        initializeIslandSystem(userProvider, spawnLocationController, scoreboardController);
+        initializeIslandSystem(userProvider, spawnLocationController, scoreboardController, timer);
 
         // Initialize the stats system
-        initializeStatsSystem(spawnLocationController, scoreboardController);
+        initializeStatsSystem(spawnLocationController, scoreboardController, userProvider, timer);
     }
 
     @Override
@@ -97,22 +93,22 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the building system
      */
-    private void initializeBuildingSystem(UserProvider userProvider) {
+    private void initializeBuildingSystem(UserProvider userProvider, Timer timer) {
         // Initialize the block registry and schedule the block removal task
         BlockRegistry blockRegistry = new BlockRegistry();
         getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry, userProvider), 0L, getConfig().getLong("blockRemoval.interval"));
 
         // Register the building hooks
-        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry, userProvider), this);
+        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry, userProvider, timer), this);
     }
 
     /**
      * Initializes the island system
      */
-    private void initializeIslandSystem(UserProvider userProvider, SpawnLocationController spawnLocationController, ScoreboardController scoreboardController) {
+    private void initializeIslandSystem(UserProvider userProvider, SpawnLocationController spawnLocationController, ScoreboardController scoreboardController, Timer timer) {
         // Start the teleportation task
-        getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController), 0L,
-                getConfig().getLong("playerTeleportation.interval"));
+        getServer().getScheduler().runTaskTimer(this, new PlayerTeleportationTask(spawnLocationController, timer),
+                0L, getConfig().getLong("playerTeleportation.interval"));
 
         // Register the island hooks
         getServer().getPluginManager().registerEvents(new IslandsHooks(userProvider, spawnLocationController, scoreboardController), this);
@@ -124,12 +120,12 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the stats system
      */
-    private void initializeStatsSystem(SpawnLocationController spawnLocationController, ScoreboardController scoreboardController) {
+    private void initializeStatsSystem(SpawnLocationController spawnLocationController, ScoreboardController scoreboardController, UserProvider userProvider, Timer timer) {
         // Start the scoreboard update task
         getServer().getScheduler().runTaskTimer(this, new ScoreboardUpdateTask(scoreboardController), 0L,
                 getConfig().getLong("scoreboard.updateInterval"));
 
-        getServer().getPluginManager().registerEvents(new StatsHooks(spawnLocationController), this);
+        getServer().getPluginManager().registerEvents(new StatsHooks(spawnLocationController, userProvider, timer), this);
     }
 
     @Override

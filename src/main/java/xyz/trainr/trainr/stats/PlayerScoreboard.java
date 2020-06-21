@@ -7,6 +7,7 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import xyz.trainr.trainr.users.UserProvider;
 import xyz.trainr.trainr.users.UserStats;
+import xyz.trainr.trainr.util.StringFormatUtil;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -40,15 +41,7 @@ public class PlayerScoreboard {
         objective = scoreboard.registerNewObjective("main_obj", "dummy");
 
         long bestTime = stats.getBestTime();
-        String formattedBestTime;
-        if (bestTime != -1) {
-            long minutes = (bestTime / 1000) / 60;
-            long seconds = (bestTime / 1000) % 60;
-            long millis = bestTime % 1000;
-            formattedBestTime = String.format("%02dm %02ds %02dms", minutes, seconds, millis);
-        } else {
-            formattedBestTime = "NaN";
-        }
+        String formattedBestTime = StringFormatUtil.formatMillis(bestTime);
 
         // Set the scoreboard contents
         addWhitespace(objective, 11);

@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.Trainr;
+import xyz.trainr.trainr.stats.Timer;
 import xyz.trainr.trainr.users.UserProvider;
 import xyz.trainr.trainr.users.UserStats;
 
@@ -30,14 +31,17 @@ public class BuildingHooks implements Listener {
     private final Trainr plugin;
     private final BlockRegistry blockRegistry;
     private final UserProvider userProvider;
+    private final Timer timer;
 
     /**
      * Creates a new building hooks object
      *
      * @param blockRegistry The block registry to use
      * @param userProvider
+     * @param timer
      */
-    public BuildingHooks(BlockRegistry blockRegistry, UserProvider userProvider) {
+    public BuildingHooks(BlockRegistry blockRegistry, UserProvider userProvider, Timer timer) {
+        this.timer = timer;
         this.plugin = JavaPlugin.getPlugin(Trainr.class);
         this.blockRegistry = blockRegistry;
         this.userProvider = userProvider;
@@ -62,6 +66,17 @@ public class BuildingHooks implements Listener {
             stats.setBlocksPlaced(stats.getBlocksPlaced() + 1);
             userProvider.updateUser(user);
         });
+
+        // Start timer if no timer is running
+        if (!timer.isTimmerRunning(player)) {
+            timer.startTimer(player);
+
+            userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
+                UserStats stats = user.getStats();
+                stats.setTotalTries(stats.getTotalTries() + 1);
+                userProvider.updateUser(user);
+            });
+        }
     }
 
     @EventHandler
