@@ -2,6 +2,7 @@ package xyz.trainr.trainr.stats;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import xyz.trainr.trainr.util.PacketUtil;
 import xyz.trainr.trainr.util.StringFormatUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -32,12 +33,10 @@ public class TimeDisplayTask implements Runnable {
             Object packet = Class.forName("net.minecraft.server.v1_8_R3.PacketPlayOutChat")
                     .getDeclaredConstructor(comp.getClass().getSuperclass().getInterfaces()[0], byte.class)
                     .newInstance(comp, (byte) 2);
-            Object craftPlayer = Class.forName("org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer").cast(player);
-            Object handle = craftPlayer.getClass().getDeclaredMethod("getHandle").invoke(craftPlayer);
-            Object con = handle.getClass().getDeclaredField("playerConnection").get(handle);
-            con.getClass().getDeclaredMethod("sendPacket", packet.getClass().getInterfaces()[0]).invoke(con, packet);
+
+            PacketUtil.sendPacket(player, packet);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
-                | IllegalAccessException | NoSuchFieldException | InstantiationException e) {
+                | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
         }
     }

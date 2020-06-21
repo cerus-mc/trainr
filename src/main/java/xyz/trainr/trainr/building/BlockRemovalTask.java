@@ -1,12 +1,20 @@
 package xyz.trainr.trainr.building;
 
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import xyz.trainr.trainr.Trainr;
 import xyz.trainr.trainr.users.UserProvider;
+import xyz.trainr.trainr.util.PacketUtil;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Handles the repeating automatic block removal task
@@ -16,6 +24,8 @@ import xyz.trainr.trainr.users.UserProvider;
  * @since 1.0.0
  */
 public class BlockRemovalTask implements Runnable {
+
+    private final Set<Location> blocks = new HashSet<>();
 
     // Define local variables
     private final Trainr plugin;
@@ -52,11 +62,51 @@ public class BlockRemovalTask implements Runnable {
                         craftBlock.setType(Material.AIR);
                         blockRegistry.unregisterBlock(block);
                         craftBlock.getWorld().playEffect(craftBlock.getLocation(), Effect.STEP_SOUND, user.getSettings().getBlockType().getId());
-                    } else if (currentTimeMillis - created >= blockLifetime - config.getInt("blockRemoval.warningStateDuration") / 20 * 1000) {
-                        craftBlock.setType(Material.valueOf(config.getString("blockRemoval.warningMaterial").toUpperCase()));
+                        blocks.remove(craftBlock.getLocation());
+                    } else if (currentTimeMillis - created >= blockLifetime - config.getInt("blockRemoval.warningStateDuration") / 20 * 1000
+                            && !blocks.contains(craftBlock.getLocation())) {
+                        blocks.add(craftBlock.getLocation());
+                        startAnimationTask(craftBlock);
                     }
                 })
         );
+    }
+
+    private void startAnimationTask(Block block) {
+        Trainr plugin = JavaPlugin.getPlugin(Trainr.class);
+        new BukkitRunnable() {
+            private int stage = 0;
+
+            @Override
+            public void run() {
+                if (stage == 10) {
+                    cancel();
+                    sendBlockBreakPacket(block, -1);
+                    return;
+                }
+
+                sendBlockBreakPacket(block, stage++);
+            }
+        }.runTaskTimerAsynchronously(plugin, 0, 2);
+    }
+
+    private void sendBlockBreakPacket(Block block, int stage) {
+        try {
+            Class<?> blockPosClass = Class.forName("net.minecraft.server.v1_8_R3.BlockPosition");
+            Class<?> packetClass = Class.forName("net.minecraft.server.v1_8_R3.PacketPlayOutBlockBreakAnimation");
+            Object packet = packetClass.getDeclaredConstructor(int.class, blockPosClass, int.class).newInstance(getBlockEntityId(block),
+                    new BlockPosition(block.getX(), block.getY(), block.getZ()), stage);
+
+            PacketUtil.broadcastPacket(packet);
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static int getBlockEntityId(Block block) {
+        return ((block.getX() & 0xFFF) << 20)
+                | ((block.getZ() & 0xFFF) << 8)
+                | (block.getY() & 0xFF);
     }
 
 }
