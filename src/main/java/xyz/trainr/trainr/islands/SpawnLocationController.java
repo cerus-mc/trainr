@@ -58,13 +58,6 @@ public class SpawnLocationController {
         player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 
         userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
-            // Check if the user fetching method threw an exception
-            if (throwable != null) {
-                throwable.printStackTrace();
-                player.kickPlayer("Unexpected error: " + throwable.getMessage());
-                return;
-            }
-
             // Teleport the player to his reserved island
             player.teleport(getNextSpawnLocation());
             playerIndexes.put(player.getUniqueId(), currentIndex);

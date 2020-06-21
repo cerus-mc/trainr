@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.Trainr;
+import xyz.trainr.trainr.users.UserProvider;
+import xyz.trainr.trainr.users.UserStats;
 
 /**
  * Registers some event listeners to control the building structure
@@ -27,15 +29,18 @@ public class BuildingHooks implements Listener {
     // Define local variables
     private final Trainr plugin;
     private final BlockRegistry blockRegistry;
+    private final UserProvider userProvider;
 
     /**
      * Creates a new building hooks object
      *
      * @param blockRegistry The block registry to use
+     * @param userProvider
      */
-    public BuildingHooks(BlockRegistry blockRegistry) {
+    public BuildingHooks(BlockRegistry blockRegistry, UserProvider userProvider) {
         this.plugin = JavaPlugin.getPlugin(Trainr.class);
         this.blockRegistry = blockRegistry;
+        this.userProvider = userProvider;
     }
 
     @EventHandler
@@ -50,6 +55,13 @@ public class BuildingHooks implements Listener {
         blockRegistry.registerBlock(new PlayerBlock(event.getBlock(), player));
         plugin.getServer().getScheduler().runTaskLater(plugin, () ->
                 player.getInventory().addItem(new ItemStack(Material.SANDSTONE)), 1);
+
+        // Update stats
+        userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
+            UserStats stats = user.getStats();
+            stats.setBlocksPlaced(stats.getBlocksPlaced() + 1);
+            userProvider.updateUser(user);
+        });
     }
 
     @EventHandler

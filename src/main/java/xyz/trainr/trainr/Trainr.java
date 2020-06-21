@@ -1,6 +1,15 @@
 package xyz.trainr.trainr;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Player;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.building.BlockRegistry;
 import xyz.trainr.trainr.building.BlockRemovalTask;
@@ -10,9 +19,11 @@ import xyz.trainr.trainr.islands.IslandsHooks;
 import xyz.trainr.trainr.islands.PlayerTeleportationTask;
 import xyz.trainr.trainr.islands.SpawnLocationController;
 import xyz.trainr.trainr.stats.ScoreboardController;
+import xyz.trainr.trainr.stats.ScoreboardUpdateTask;
 import xyz.trainr.trainr.stats.StatsHooks;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
+import xyz.trainr.trainr.worldgen.TrainrChunkGenerator;
 
 /**
  * Represents the loading class of this plugin
@@ -50,7 +61,7 @@ public class Trainr extends JavaPlugin {
         initializeIslandSystem(userProvider, spawnLocationController, scoreboardController);
 
         // Initialize the stats system
-        initializeStatsSystem(spawnLocationController);
+        initializeStatsSystem(spawnLocationController, scoreboardController);
     }
 
     @Override
@@ -92,7 +103,7 @@ public class Trainr extends JavaPlugin {
         getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry, userProvider), 0L, getConfig().getLong("blockRemoval.interval"));
 
         // Register the building hooks
-        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry), this);
+        getServer().getPluginManager().registerEvents(new BuildingHooks(blockRegistry, userProvider), this);
     }
 
     /**
@@ -113,8 +124,20 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the stats system
      */
-    private void initializeStatsSystem(SpawnLocationController spawnLocationController) {
+    private void initializeStatsSystem(SpawnLocationController spawnLocationController, ScoreboardController scoreboardController) {
+        // Start the scoreboard update task
+        getServer().getScheduler().runTaskTimer(this, new ScoreboardUpdateTask(scoreboardController), 0L,
+                getConfig().getLong("scoreboard.updateInterval"));
+
         getServer().getPluginManager().registerEvents(new StatsHooks(spawnLocationController), this);
+    }
+
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+        if (worldName.equals("world")) {
+            return new TrainrChunkGenerator();
+        }
+        return super.getDefaultWorldGenerator(worldName, id);
     }
 
 }
