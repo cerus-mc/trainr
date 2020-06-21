@@ -15,10 +15,17 @@ public class Timer {
     }
 
     public long stopTimer(Player player) {
-        if(!isTimmerRunning(player)) {
+        if (!isTimmerRunning(player)) {
             return -1;
         }
         return System.currentTimeMillis() - timerMap.remove(player.getUniqueId());
+    }
+
+    public long peekTimer(Player player) {
+        if (!isTimmerRunning(player)) {
+            return -1;
+        }
+        return System.currentTimeMillis() - timerMap.get(player.getUniqueId());
     }
 
     public boolean isTimmerRunning(Player player) {

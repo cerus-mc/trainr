@@ -10,10 +10,7 @@ import xyz.trainr.trainr.database.DatabaseController;
 import xyz.trainr.trainr.islands.IslandsHooks;
 import xyz.trainr.trainr.islands.PlayerTeleportationTask;
 import xyz.trainr.trainr.islands.SpawnLocationController;
-import xyz.trainr.trainr.stats.ScoreboardController;
-import xyz.trainr.trainr.stats.ScoreboardUpdateTask;
-import xyz.trainr.trainr.stats.StatsHooks;
-import xyz.trainr.trainr.stats.Timer;
+import xyz.trainr.trainr.stats.*;
 import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
 import xyz.trainr.trainr.worldgen.TrainrChunkGenerator;
@@ -124,6 +121,7 @@ public class Trainr extends JavaPlugin {
         // Start the scoreboard update task
         getServer().getScheduler().runTaskTimer(this, new ScoreboardUpdateTask(scoreboardController), 0L,
                 getConfig().getLong("scoreboard.updateInterval"));
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new TimeDisplayTask(timer), 0L, 2);
 
         getServer().getPluginManager().registerEvents(new StatsHooks(spawnLocationController, userProvider, timer), this);
     }
