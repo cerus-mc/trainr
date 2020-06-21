@@ -1,25 +1,30 @@
 package xyz.trainr.trainr.stats;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+import xyz.trainr.trainr.users.User;
 import xyz.trainr.trainr.users.UserProvider;
 import xyz.trainr.trainr.users.UserStats;
 import xyz.trainr.trainr.util.StringFormatUtil;
 
+import java.util.Comparator;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PlayerScoreboard {
 
     private final Player player;
     private final Scoreboard scoreboard;
+    private final UserProvider userProvider;
     private UserStats stats;
 
     public PlayerScoreboard(UserProvider userProvider, Player player, Scoreboard scoreboard) {
         this.player = player;
         this.scoreboard = scoreboard;
+        this.userProvider = userProvider;
 
         userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
             this.stats = user.getStats();
@@ -43,23 +48,39 @@ public class PlayerScoreboard {
         long bestTime = stats.getBestTime();
         String formattedBestTime = StringFormatUtil.formatMillis(bestTime);
 
+        float succeededTries = stats.getSucceededTries();
+        float totalTries = stats.getTotalTries();
+        player.sendMessage("" + (succeededTries / (totalTries - succeededTries)));
+
         // Set the scoreboard contents
         addWhitespace(objective, 11);
-        addEntry(objective, "§eAccount:", 10);
-        addEntry(objective, "§r §8» §d" + player.getDisplayName(), 9);
+        addEntry(objective, "§eSuccesses/Fails:", 10);
+        addEntry(objective, "§r §8» §d" + String.format("%.2f", succeededTries / (totalTries - succeededTries)), 9);
         addWhitespace(objective, 8);
         addEntry(objective, "§ePersonal best:", 7);
         addEntry(objective, "§r §8» §b" + formattedBestTime, 6);
         addWhitespace(objective, 5);
         addEntry(objective, "§eGlobal top 3:", 4);
-        addEntry(objective, "§r §8» §7NaN§3", 3);
-        addEntry(objective, "§r §8» §7NaN§2", 2);
-        addEntry(objective, "§r §8» §7NaN§1", 1);
+
+        User[] userArr = userProvider.getCachedUsers().stream()
+                .filter(user -> user.getStats().getBestTime() > -1)
+                .sorted(Comparator.comparingLong(value -> value.getStats().getBestTime()))
+                .limit(3)
+                .toArray(User[]::new);
+
+        addEntry(objective, "§r §8» §7" + (userArr.length < 1 ? "N/A" : formatUser(userArr[0])) + "§3", 3);
+        addEntry(objective, "§r §8» §7" + (userArr.length < 2 ? "N/A" : formatUser(userArr[1])) + "§2", 2);
+        addEntry(objective, "§r §8» §7" + (userArr.length < 3 ? "N/A" : formatUser(userArr[2])) + "§1", 1);
         addWhitespace(objective, 0);
 
         // Set the objective data
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName("§6§lTrainr");
+    }
+
+    private String formatUser(User user) {
+        return Bukkit.getOfflinePlayer(user.getUuid()).getName() + " ["
+                + StringFormatUtil.formatMillisShort(user.getStats().getBestTime()) + "]";
     }
 
     /**
