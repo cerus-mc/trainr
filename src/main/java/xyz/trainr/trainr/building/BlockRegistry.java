@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-;
-
 /**
  * Registers all placed blocks to provide a simple overview for the BlockRemovalTask
  *
@@ -20,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BlockRegistry {
 
     // Define private variables
-    private Map<PlayerBlock, Long> blocks;
+    private final Map<PlayerBlock, Long> blocks;
 
     /**
      * Creates a new block registry
@@ -48,7 +46,7 @@ public class BlockRegistry {
     }
 
     /**
-     * Unregisters all block of a player
+     * Unregisters all blocks of a player
      *
      * @param player The player
      */
