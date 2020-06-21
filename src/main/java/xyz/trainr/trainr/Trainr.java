@@ -24,7 +24,7 @@ import xyz.trainr.trainr.worldgen.TrainrChunkGenerator;
  */
 public class Trainr extends JavaPlugin {
 
-    // Define the database controller
+    // Define variables
     private DatabaseController databaseController;
     private BlockRegistry blockRegistry;
 
