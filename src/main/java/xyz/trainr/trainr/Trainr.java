@@ -26,6 +26,7 @@ public class Trainr extends JavaPlugin {
 
     // Define the database controller
     private DatabaseController databaseController;
+    private BlockRegistry blockRegistry;
 
     @Override
     public void onEnable() {
@@ -41,11 +42,14 @@ public class Trainr extends JavaPlugin {
         // Initialize a new timer
         Timer timer = new Timer();
 
+        // Initialize block registry
+        blockRegistry = new BlockRegistry();
+
         // Initialize new spawn location controller
-        SpawnLocationController spawnLocationController = new SpawnLocationController(userProvider);
+        SpawnLocationController spawnLocationController = new SpawnLocationController(userProvider, blockRegistry);
 
         // Initialize the building system
-        initializeBuildingSystem(userProvider, timer, spawnLocationController);
+        initializeBuildingSystem(userProvider, timer, spawnLocationController, blockRegistry);
 
         // Initialize new scoreboard controller
         ScoreboardController scoreboardController = new ScoreboardController(userProvider);
@@ -59,6 +63,9 @@ public class Trainr extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Unregister all blocks
+        blockRegistry.unregisterAll();
+
         // Close the current MongoDB connection
         databaseController.closeConnection();
     }
@@ -90,9 +97,8 @@ public class Trainr extends JavaPlugin {
     /**
      * Initializes the building system
      */
-    private void initializeBuildingSystem(UserProvider userProvider, Timer timer, SpawnLocationController spawnLocationController) {
-        // Initialize the block registry and schedule the block removal task
-        BlockRegistry blockRegistry = new BlockRegistry();
+    private void initializeBuildingSystem(UserProvider userProvider, Timer timer, SpawnLocationController spawnLocationController, BlockRegistry blockRegistry) {
+        // Schedule the block removal task
         getServer().getScheduler().runTaskTimer(this, new BlockRemovalTask(blockRegistry, userProvider), 0L, getConfig().getLong("blockRemoval.interval"));
 
         // Register the building hooks
