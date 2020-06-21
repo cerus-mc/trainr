@@ -41,9 +41,9 @@ public class BuildingHooks implements Listener {
      * Creates a new building hooks object
      *
      * @param blockRegistry           The block registry to use
-     * @param userProvider
-     * @param spawnLocationController
-     * @param timer
+     * @param userProvider            The user provider
+     * @param spawnLocationController The spawn location controller
+     * @param timer                   The timer
      */
     public BuildingHooks(BlockRegistry blockRegistry, UserProvider userProvider, SpawnLocationController spawnLocationController, Timer timer) {
         this.spawnLocationController = spawnLocationController;

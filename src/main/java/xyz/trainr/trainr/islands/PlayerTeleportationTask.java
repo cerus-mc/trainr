@@ -22,7 +22,7 @@ public class PlayerTeleportationTask implements Runnable {
      * Creates a new player teleportation task
      *
      * @param spawnLocationController The spawn location controller to use
-     * @param timer
+     * @param timer                   The timer FUCK YOU LUKAS
      */
     public PlayerTeleportationTask(SpawnLocationController spawnLocationController, Timer timer) {
         this.spawnLocationController = spawnLocationController;
