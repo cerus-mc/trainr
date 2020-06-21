@@ -2,6 +2,7 @@ package xyz.trainr.trainr.islands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import xyz.trainr.trainr.stats.Timer;
 
 /**
@@ -35,10 +36,11 @@ public class PlayerTeleportationTask implements Runnable {
                 .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
                 .filter(player -> player.getLocation().getBlockY() <= spawnLocationController.getDeathHeight())
                 .forEach(player -> {
+                    spawnLocationController.respawn(player);
                     if (timer.isTimmerRunning(player)) {
                         timer.stopTimer(player);
+                        player.playSound(player.getLocation(), Sound.ITEM_BREAK, 1, 1);
                     }
-                    spawnLocationController.respawn(player);
                 });
     }
 

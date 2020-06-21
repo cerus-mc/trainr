@@ -13,7 +13,7 @@ public class StringFormatUtil {
         long minutes = (timeInMillis / 1000) / 60;
         long seconds = (timeInMillis / 1000) % 60;
         long millis = timeInMillis % 1000;
-        return String.format("%02dm %02ds %02dms", minutes, seconds, millis);
+        return String.format("%02dm %02ds %03dms", minutes, seconds, millis);
     }
 
 }
