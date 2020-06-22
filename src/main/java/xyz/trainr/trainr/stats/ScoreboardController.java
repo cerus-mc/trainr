@@ -44,4 +44,17 @@ public class ScoreboardController {
         scoreboardMap.get(player.getUniqueId()).setPlayerScoreboard();
     }
 
+    /**
+     * Removes and destroys the scoreboard of the given player
+     *
+     * @param player The scoreboard owner
+     */
+    public void removeScoreboard(Player player) {
+        if (!scoreboardMap.containsKey(player.getUniqueId())) {
+            return;
+        }
+
+        scoreboardMap.remove(player.getUniqueId()).destroy();
+    }
+
 }

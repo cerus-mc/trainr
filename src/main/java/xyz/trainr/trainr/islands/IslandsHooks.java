@@ -60,6 +60,7 @@ public class IslandsHooks implements Listener {
         // Replace the quit message and free the island of the quitting player
         event.setQuitMessage(null);
         spawnLocationController.handleLeave(event.getPlayer());
+        scoreboardController.removeScoreboard(event.getPlayer());
     }
 
     @EventHandler
