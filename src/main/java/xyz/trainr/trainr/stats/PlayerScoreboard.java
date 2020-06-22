@@ -50,7 +50,6 @@ public class PlayerScoreboard {
 
         float succeededTries = stats.getSucceededTries();
         float totalTries = stats.getTotalTries();
-        player.sendMessage("" + (succeededTries / (totalTries - succeededTries)));
 
         // Set the scoreboard contents
         addWhitespace(objective, 11);
