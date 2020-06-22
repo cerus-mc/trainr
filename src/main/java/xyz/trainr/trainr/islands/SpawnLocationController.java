@@ -3,13 +3,13 @@ package xyz.trainr.trainr.islands;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.trainr.trainr.Trainr;
+import xyz.trainr.trainr.building.BlockRegistry;
 import xyz.trainr.trainr.users.UserProvider;
 
 import java.util.Map;
@@ -28,6 +28,7 @@ public class SpawnLocationController {
 
     // Define local variables
     private final UserProvider userProvider;
+    private final BlockRegistry blockRegistry;
     private int currentIndex = 0;
     private final int xOffset;
     private final int zOffset;
@@ -37,9 +38,11 @@ public class SpawnLocationController {
     /**
      * Creates a new spawn location controller
      *
-     * @param userProvider The user provider to use
+     * @param userProvider  The user provider to use
+     * @param blockRegistry The block registry
      */
-    public SpawnLocationController(UserProvider userProvider) {
+    public SpawnLocationController(UserProvider userProvider, BlockRegistry blockRegistry) {
+        this.blockRegistry = blockRegistry;
         Configuration config = JavaPlugin.getPlugin(Trainr.class).getConfig();
 
         this.userProvider = userProvider;
@@ -54,7 +57,7 @@ public class SpawnLocationController {
      * @param player The joining player
      */
     public void handleJoin(Player player) {
-         // Teleport to world spawn first
+        // Teleport to world spawn first
         player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 
         userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
@@ -183,8 +186,13 @@ public class SpawnLocationController {
 
         // Teleport the player to his island
         player.teleport(location.get());
-        player.getInventory().clear();
-        player.getInventory().setItem(0, new ItemStack(Material.SANDSTONE, 64));
+        userProvider.getCachedUser(player.getUniqueId()).ifPresent(user -> {
+            player.getInventory().clear();
+            player.getInventory().setItem(0, new ItemStack(user.getSettings().getBlockType(), 64));
+            player.getInventory().clear(8);
+        });
+
+        blockRegistry.unregisterAll(player);
     }
 
 }

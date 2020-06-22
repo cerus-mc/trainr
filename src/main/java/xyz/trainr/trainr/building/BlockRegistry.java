@@ -1,8 +1,10 @@
 package xyz.trainr.trainr.building;
 
-import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
-import java.util.Collections;;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BlockRegistry {
 
     // Define private variables
-    private Map<PlayerBlock, Long> blocks;
+    private final Map<PlayerBlock, Long> blocks;
 
     /**
      * Creates a new block registry
@@ -41,6 +43,28 @@ public class BlockRegistry {
      */
     public void unregisterBlock(PlayerBlock block) {
         blocks.remove(block);
+    }
+
+    /**
+     * Unregisters all blocks of a player
+     *
+     * @param player The player
+     */
+    public void unregisterAll(Player player) {
+        new HashSet<>(blocks.keySet()).stream()
+                .filter(playerBlock -> playerBlock.getPlayer().getUniqueId().equals(player.getUniqueId()))
+                .forEach(playerBlock -> {
+                    playerBlock.getBlock().setType(Material.AIR);
+                    blocks.remove(playerBlock);
+                });
+    }
+
+    /**
+     * Unregisters all blocks
+     */
+    public void unregisterAll() {
+        blocks.keySet().forEach(playerBlock -> playerBlock.getBlock().setType(Material.AIR));
+        blocks.clear();
     }
 
     /**

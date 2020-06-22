@@ -6,10 +6,7 @@ import com.mongodb.client.result.UpdateResult;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import xyz.trainr.trainr.database.CallbackSubscriber;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -51,11 +48,12 @@ public class UserProvider {
         collection.find().subscribe(subscriber);
 
         // Wait until the subscriber finished
-        while (!finished.get());
+        while (!finished.get()) ;
     }
 
     /**
      * Retrieves a cached user
+     *
      * @param uuid The UUID of the user
      * @return The optional cached user
      */
@@ -114,4 +112,12 @@ public class UserProvider {
         return future;
     }
 
+    /**
+     * Return the cached users
+     *
+     * @return the cached users (unmodifiable)
+     */
+    public Set<User> getCachedUsers() {
+        return Collections.unmodifiableSet(cachedUsers);
+    }
 }
